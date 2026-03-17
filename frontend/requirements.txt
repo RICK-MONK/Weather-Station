@@ -1,0 +1,2 @@
+# No Python requirements are needed for the frontend.
+# Frontend dependencies are managed through package.json.

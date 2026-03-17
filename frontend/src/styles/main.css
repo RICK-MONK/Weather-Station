@@ -1,0 +1,9 @@
+body {
+  margin: 0;
+  font-family: "Segoe UI", "Trebuchet MS", sans-serif;
+  background-color: #edf1f4;
+}
+
+#app {
+  min-height: 100vh;
+}
