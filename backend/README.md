@@ -11,6 +11,9 @@ pip install -r requirements.txt
 python run.py
 ```
 
+The Flask server listens on `0.0.0.0:5000` by default so devices on the same LAN can reach it.
+Override with `FLASK_HOST`, `FLASK_PORT`, or `FLASK_DEBUG` in your environment if needed.
+
 ## Available Routes
 
 - `GET /api/health`
@@ -31,7 +34,13 @@ python run.py
   "heatIndex": 24.5,
   "pressure": 932.9,
   "altitude": 691.8,
-  "soilMoisture": 222
+  "soilMoisture": 62,
+  "soilRaw": 372,
+  "soilMoisturePercent": 62,
+  "dhtOk": 1,
+  "bmpOk": 1,
+  "soilOk": 1,
+  "sampleMillis": 182340
 }
 ```
 

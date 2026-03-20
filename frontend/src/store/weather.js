@@ -1,6 +1,10 @@
 import { defineStore } from 'pinia'
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:5000'
+const configuredApiBaseUrl = import.meta.env.VITE_API_BASE_URL?.trim()
+const defaultApiBaseUrl = `${window.location.protocol}//${window.location.hostname}:5000`
+const API_BASE_URL = configuredApiBaseUrl || defaultApiBaseUrl
+const SOIL_RAW_DRY = 720
+const SOIL_RAW_WET = 160
 
 function formatTimestamp(timestamp) {
   if (!timestamp) {
@@ -20,14 +24,59 @@ function formatMetric(value, unit, digits = 1) {
   return `${numericValue.toFixed(digits)} ${unit}`.trim()
 }
 
+function computeSoilPercent(rawValue) {
+  const numericValue = Number(rawValue)
+
+  if (!Number.isFinite(numericValue)) {
+    return NaN
+  }
+
+  const percent = ((numericValue - SOIL_RAW_DRY) * 100) / (SOIL_RAW_WET - SOIL_RAW_DRY)
+  return Math.min(100, Math.max(0, Math.round(percent)))
+}
+
+function normalizeSoilReading(reading = {}) {
+  const explicitRaw = Number(reading.soilRaw)
+  const explicitPercent = Number(reading.soilMoisturePercent)
+  const legacySoilValue = Number(reading.soilMoisture)
+
+  const soilRaw = Number.isFinite(explicitRaw)
+    ? explicitRaw
+    : Number.isFinite(explicitPercent)
+      ? NaN
+      : legacySoilValue
+
+  const soilMoisturePercent = Number.isFinite(explicitPercent)
+    ? explicitPercent
+    : Number.isFinite(soilRaw)
+      ? computeSoilPercent(soilRaw)
+      : legacySoilValue
+
+  return {
+    soilRaw,
+    soilMoisturePercent,
+    soilMoisture: soilMoisturePercent,
+  }
+}
+
 function normalizeReading(reading = {}) {
+  const soilReading = normalizeSoilReading(reading)
+
   return {
     temperature: Number(reading.temperature),
     humidity: Number(reading.humidity),
     heatIndex: Number(reading.heatIndex),
     pressure: Number(reading.pressure),
     altitude: Number(reading.altitude),
-    soilMoisture: Number(reading.soilMoisture),
+    seaLevelPressureHpa: Number(reading.seaLevelPressureHpa),
+    altitudeEstimated: reading.altitudeEstimated === undefined ? true : Boolean(Number(reading.altitudeEstimated)),
+    soilMoisture: soilReading.soilMoisture,
+    soilRaw: soilReading.soilRaw,
+    soilMoisturePercent: soilReading.soilMoisturePercent,
+    dhtOk: reading.dhtOk === undefined ? true : Boolean(Number(reading.dhtOk)),
+    bmpOk: reading.bmpOk === undefined ? true : Boolean(Number(reading.bmpOk)),
+    soilOk: reading.soilOk === undefined ? true : Boolean(Number(reading.soilOk)),
+    sampleMillis: Number(reading.sampleMillis),
     timestamp: Number(reading.timestamp),
   }
 }
@@ -42,6 +91,8 @@ export const useWeatherStore = defineStore('weather', {
       pressure: '--',
       altitude: '--',
       soilMoisture: '--',
+      soilRaw: '--',
+      sensorHealth: 'All sensors OK',
       timestamp: 'No data yet',
     },
     recentReadings: [],
@@ -75,7 +126,11 @@ export const useWeatherStore = defineStore('weather', {
           heatIndex: formatMetric(reading.heatIndex, 'C'),
           pressure: formatMetric(reading.pressure, 'hPa'),
           altitude: formatMetric(reading.altitude, 'm'),
-          soilMoisture: formatMetric(reading.soilMoisture, 'raw', 0),
+          soilMoisture: formatMetric(reading.soilMoisturePercent, '%', 0),
+          soilRaw: formatMetric(reading.soilRaw, 'raw', 0),
+          sensorHealth: [reading.dhtOk, reading.bmpOk, reading.soilOk].every(Boolean)
+            ? 'All sensors OK'
+            : 'Using fallback sensor data',
           timestamp: formatTimestamp(reading.timestamp),
         })
       } catch (error) {

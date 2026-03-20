@@ -19,6 +19,17 @@ REQUIRED_WEATHER_FIELDS = (
     "soilMoisture",
 )
 
+OPTIONAL_NUMERIC_WEATHER_FIELDS = (
+    "seaLevelPressureHpa",
+    "altitudeEstimated",
+    "soilRaw",
+    "soilMoisturePercent",
+    "dhtOk",
+    "bmpOk",
+    "soilOk",
+    "sampleMillis",
+)
+
 
 def validate_weather_payload(payload):
     missing = [field for field in REQUIRED_WEATHER_FIELDS if field not in payload]
@@ -37,7 +48,12 @@ def validate_weather_payload(payload):
         "soilMoisture",
     )
 
-    for field in numeric_fields:
+    numeric_fields_to_validate = list(numeric_fields)
+    numeric_fields_to_validate.extend(
+        field for field in OPTIONAL_NUMERIC_WEATHER_FIELDS if field in payload
+    )
+
+    for field in numeric_fields_to_validate:
         try:
             float(payload[field])
         except (TypeError, ValueError):

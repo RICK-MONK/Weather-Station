@@ -40,7 +40,7 @@
                 <li>Display ESP32 is acting as the Wi-Fi gateway and HTTP client.</li>
                 <li>MongoDB-backed metrics are live; firewall rules should remain enabled for port 5000 on the private network.</li>
                 <li>Soil moisture is still using placeholder calibration values and should be finalized before presentation.</li>
-                <li>Altitude is BMP280-derived and should be described as estimated unless the sea-level reference is tuned.</li>
+                <li>Altitude is BMP280-derived and is treated as an estimated value using the calibrated sea-level reference of 1032.0 hPa.</li>
               </ul>
             </v-card-text>
           </v-card>

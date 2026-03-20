@@ -88,7 +88,7 @@
             </div>
             <div class="legend-row">
               <span class="legend-item"><span class="legend-dot legend-dot--pressure"></span>Pressure</span>
-              <span class="legend-item"><span class="legend-dot legend-dot--soil"></span>Soil Moisture</span>
+              <span class="legend-item"><span class="legend-dot legend-dot--soil"></span>Soil Moisture %</span>
             </div>
             <svg class="chart-svg" viewBox="0 0 620 240" preserveAspectRatio="none">
               <polyline
@@ -176,9 +176,9 @@ function getStatus(value, type) {
       return { text: 'Estimated', class: 'chip-neutral' }
 
     case 'soilMoisture':
-      if (value >= 320) return { text: 'Dry', class: 'chip-danger' }
-      if (value >= 260) return { text: 'Moderate', class: 'chip-warn' }
-      return { text: 'Moist', class: 'chip-good' }
+      if (value <= 20) return { text: 'Dry', class: 'chip-danger' }
+      if (value <= 70) return { text: 'Mid', class: 'chip-warn' }
+      return { text: 'Wet', class: 'chip-good' }
 
     default:
       return { text: 'Unknown', class: 'chip-neutral' }
@@ -273,9 +273,33 @@ const backendFreshness = computed(() => {
   return { text: 'Stale', class: 'chip-danger' }
 })
 
+const sensorHealthStatus = computed(() => {
+  if (!latestRaw.value || !Number.isFinite(latestRaw.value.timestamp)) {
+    return null
+  }
+
+  if (!latestRaw.value.dhtOk) {
+    return { text: 'DHT Fallback', class: 'chip-warn' }
+  }
+
+  if (!latestRaw.value.bmpOk) {
+    return { text: 'BMP Fallback', class: 'chip-warn' }
+  }
+
+  if (!latestRaw.value.soilOk) {
+    return { text: 'Soil Fallback', class: 'chip-warn' }
+  }
+
+  return null
+})
+
 const heroStatus = computed(() => {
   if (weatherStore.error) {
     return { text: weatherStore.error, class: 'chip-danger' }
+  }
+
+  if (sensorHealthStatus.value) {
+    return sensorHealthStatus.value
   }
 
   return backendFreshness.value
@@ -319,10 +343,10 @@ const metrics = computed(() => [
   },
   {
     label: 'Soil Moisture',
-    value: formatMetric(Number(latestRaw.value.soilMoisture), 'raw', 0),
-    caption: 'Raw probe reading, calibration pending',
-    trend: getTrend(Number(latestRaw.value.soilMoisture), Number(previousRaw.value?.soilMoisture), 1),
-    status: getStatus(Number(latestRaw.value.soilMoisture), 'soilMoisture'),
+    value: formatMetric(Number(latestRaw.value.soilMoisturePercent), '%', 0),
+    caption: 'Calibrated percentage derived from the raw probe reading',
+    trend: getTrend(Number(latestRaw.value.soilMoisturePercent), Number(previousRaw.value?.soilMoisturePercent), 1),
+    status: getStatus(Number(latestRaw.value.soilMoisturePercent), 'soilMoisture'),
   },
 ])
 
@@ -334,7 +358,7 @@ const comfortSeries = computed(() => [
 
 const environmentSeries = computed(() => [
   buildSeries(weatherStore.recentReadings, 'pressure', '#4f7a50', 'Pressure'),
-  buildSeries(weatherStore.recentReadings, 'soilMoisture', '#00a6a6', 'Soil Moisture'),
+  buildSeries(weatherStore.recentReadings, 'soilMoisturePercent', '#00a6a6', 'Soil Moisture %'),
 ])
 
 onMounted(() => {

@@ -66,7 +66,7 @@ const sensors = [
   { key: 'humidity', label: 'Humidity' },
   { key: 'heat-index', label: 'Heat Index' },
   { key: 'pressure', label: 'Pressure' },
-  { key: 'altitude', label: 'Altitude' },
+  { key: 'altitude', label: 'Estimated Altitude' },
   { key: 'soil-moisture', label: 'Soil Moisture' },
 ]
 
@@ -102,27 +102,27 @@ const sensorConfig = {
   pressure: {
     title: 'Pressure trend monitor',
     description: 'Watch atmospheric pressure movement over the latest readings.',
-    chartTitle: 'Pressure and altitude',
+    chartTitle: 'Pressure and estimated altitude',
     series: [
       { key: 'pressure', label: 'Pressure', color: '#4f7a50' },
-      { key: 'altitude', label: 'Altitude', color: '#8d63c7' },
+      { key: 'altitude', label: 'Estimated Altitude', color: '#8d63c7' },
     ],
   },
   altitude: {
-    title: 'Altitude trend monitor',
-    description: 'Review the derived altitude line in relation to pressure changes.',
-    chartTitle: 'Altitude and pressure',
+    title: 'Estimated altitude trend monitor',
+    description: 'Review the derived altitude estimate in relation to pressure changes and the calibrated sea-level reference.',
+    chartTitle: 'Estimated altitude and pressure',
     series: [
-      { key: 'altitude', label: 'Altitude', color: '#8d63c7' },
+      { key: 'altitude', label: 'Estimated Altitude', color: '#8d63c7' },
       { key: 'pressure', label: 'Pressure', color: '#4f7a50' },
     ],
   },
   'soil-moisture': {
     title: 'Soil moisture trend monitor',
-    description: 'Follow moisture movement across the recent sensor window.',
-    chartTitle: 'Soil moisture history',
+    description: 'Follow the calibrated soil moisture percentage across the recent sensor window.',
+    chartTitle: 'Soil moisture percentage history',
     series: [
-      { key: 'soilMoisture', label: 'Soil Moisture', color: '#00a6a6' },
+      { key: 'soilMoisturePercent', label: 'Soil Moisture %', color: '#00a6a6' },
     ],
   },
 }

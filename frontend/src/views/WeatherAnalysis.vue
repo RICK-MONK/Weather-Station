@@ -87,7 +87,7 @@ const sensors = [
   { key: 'humidity', label: 'Humidity' },
   { key: 'heat-index', label: 'Heat Index' },
   { key: 'pressure', label: 'Pressure' },
-  { key: 'altitude', label: 'Altitude' },
+  { key: 'altitude', label: 'Estimated Altitude' },
   { key: 'soil-moisture', label: 'Soil Moisture' },
 ]
 
@@ -129,22 +129,22 @@ const sensorConfig = {
     columnLabel: 'Pressure',
   },
   altitude: {
-    title: 'Altitude analysis window',
-    description: 'Review the estimated altitude output derived from pressure.',
+    title: 'Estimated altitude analysis window',
+    description: 'Review the altitude estimate derived from pressure using the calibrated sea-level reference.',
     key: 'altitude',
     unit: 'm',
     digits: 1,
-    tableTitle: 'Altitude samples',
-    columnLabel: 'Altitude',
+    tableTitle: 'Estimated altitude samples',
+    columnLabel: 'Estimated Altitude',
   },
   'soil-moisture': {
     title: 'Soil moisture analysis window',
-    description: 'Track the raw soil moisture values until final calibration is complete.',
-    key: 'soilMoisture',
-    unit: 'raw',
+    description: 'Track the calibrated soil moisture percentage across the recent readings.',
+    key: 'soilMoisturePercent',
+    unit: '%',
     digits: 0,
-    tableTitle: 'Soil moisture samples',
-    columnLabel: 'Soil Moisture',
+    tableTitle: 'Soil moisture percentage samples',
+    columnLabel: 'Soil Moisture %',
   },
 }
 

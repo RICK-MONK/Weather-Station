@@ -31,7 +31,7 @@ class DB:
 
     def _normalize_weather_payload(self, data):
         timestamp = int(datetime.now(timezone.utc).timestamp())
-        return {
+        document = {
             "id": str(data["id"]),
             "type": str(data["type"]),
             "temperature": float(data["temperature"]),
@@ -42,6 +42,32 @@ class DB:
             "soilMoisture": int(data["soilMoisture"]),
             "timestamp": timestamp,
         }
+
+        if "seaLevelPressureHpa" in data:
+            document["seaLevelPressureHpa"] = float(data["seaLevelPressureHpa"])
+
+        if "altitudeEstimated" in data:
+            document["altitudeEstimated"] = bool(int(data["altitudeEstimated"]))
+
+        if "soilRaw" in data:
+            document["soilRaw"] = int(data["soilRaw"])
+
+        if "soilMoisturePercent" in data:
+            document["soilMoisturePercent"] = int(data["soilMoisturePercent"])
+
+        if "dhtOk" in data:
+            document["dhtOk"] = bool(int(data["dhtOk"]))
+
+        if "bmpOk" in data:
+            document["bmpOk"] = bool(int(data["bmpOk"]))
+
+        if "soilOk" in data:
+            document["soilOk"] = bool(int(data["soilOk"]))
+
+        if "sampleMillis" in data:
+            document["sampleMillis"] = int(data["sampleMillis"])
+
+        return document
 
     def save_weather_update(self, data):
         document = self._normalize_weather_payload(data)
