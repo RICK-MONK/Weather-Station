@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, current_app, jsonify, request
 
 from app.functions import DB
 from app.mqtt import MQTTClient
@@ -78,15 +78,39 @@ def health():
 @api_blueprint.route("/api/weather/update", methods=["POST"])
 def weather_update():
     payload = request.get_json(silent=True) or {}
+    current_app.logger.info(
+        "POST /api/weather/update from %s payload=%s",
+        request.remote_addr,
+        payload,
+    )
     error = validate_weather_payload(payload)
     if error:
+        current_app.logger.warning("Rejected weather update: %s", error)
         return jsonify({"status": "error", "error": error}), 400
 
     saved = db.save_weather_update(payload)
     if saved["status"] != "complete":
+        current_app.logger.error("Weather update save failed: %s", saved["message"])
         return jsonify({"status": "error", "error": saved["message"]}), 500
 
-    mqtt.publish("weatherstation/update", payload)
+    publish_ok = mqtt.publish(mqtt.topic, saved["data"])
+    if not publish_ok:
+        current_app.logger.error(
+            "MQTT publish failed for device=%s topic=%s",
+            payload.get("id"),
+            mqtt.topic,
+        )
+    else:
+        current_app.logger.info(
+            "MQTT publish complete for device=%s topic=%s",
+            payload.get("id"),
+            mqtt.topic,
+        )
+    current_app.logger.info(
+        "Weather update saved for device=%s inserted_id=%s",
+        payload.get("id"),
+        saved.get("inserted_id"),
+    )
 
     return jsonify(
         {
@@ -102,11 +126,14 @@ def weather_update():
 
 @api_blueprint.route("/api/weather/latest", methods=["GET"])
 def weather_latest():
+    current_app.logger.info("GET /api/weather/latest")
     latest = db.get_latest_weather()
     if latest.get("status") == "error":
+        current_app.logger.error("Latest weather query failed: %s", latest["message"])
         return jsonify({"status": "error", "error": latest["message"]}), 500
 
     if latest.get("status") == "empty":
+        current_app.logger.info("Latest weather query returned no data")
         return jsonify({"status": "empty", "data": latest}), 404
 
     return jsonify({"status": "found", "data": latest})
@@ -115,11 +142,14 @@ def weather_latest():
 @api_blueprint.route("/api/weather/recent", methods=["GET"])
 def weather_recent():
     limit = request.args.get("limit", default=50)
+    current_app.logger.info("GET /api/weather/recent limit=%s", limit)
     recent = db.get_recent_weather(limit=limit)
     if isinstance(recent, dict) and recent.get("status") == "error":
+        current_app.logger.error("Recent weather query failed: %s", recent["message"])
         return jsonify({"status": "error", "error": recent["message"]}), 500
 
     if isinstance(recent, dict) and recent.get("status") == "empty":
+        current_app.logger.info("Recent weather query returned no data")
         return jsonify({"status": "empty", "data": recent}), 404
 
     return jsonify({"status": "found", "data": recent})

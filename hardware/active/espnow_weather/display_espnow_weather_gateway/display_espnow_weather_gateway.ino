@@ -11,10 +11,22 @@
 #define SOIL_RAW_DRY 720
 #define SOIL_RAW_WET 160
 #define ESPNOW_WIFI_CHANNEL 6
+#define STRINGIFY_INNER(value) #value
+#define STRINGIFY(value) STRINGIFY_INNER(value)
+#define BACKEND_IP_1 172
+#define BACKEND_IP_2 16
+#define BACKEND_IP_3 194
+#define BACKEND_IP_4 81
 
 const char* WIFI_SSID = "MonaConnect";
 const char* WIFI_PASSWORD = "";
-const char* BACKEND_URL = "http://172.16.192.54:5000/api/weather/update";
+const char* BACKEND_URL =
+    "http://"
+    STRINGIFY(BACKEND_IP_1) "."
+    STRINGIFY(BACKEND_IP_2) "."
+    STRINGIFY(BACKEND_IP_3) "."
+    STRINGIFY(BACKEND_IP_4)
+    ":5000/api/weather/update";
 const char* DEVICE_ID = "620169874";
 const char* PROJECT_LOCATION = "Project Site";
 const char* NTP_SERVER_PRIMARY = "pool.ntp.org";
@@ -50,7 +62,9 @@ constexpr uint16_t TOUCH_Y_MIN = 340;
 constexpr uint16_t TOUCH_Y_MAX = 3860;
 constexpr bool TOUCH_MIRROR_X = true;
 constexpr bool TOUCH_MIRROR_Y = false;
-IPAddress BACKEND_HOST(172, 16, 192, 54);
+// Keep these octets aligned with the computer currently running the Flask
+// backend. If the PC joins a different Wi-Fi/hotspot, update BACKEND_IP_*.
+IPAddress BACKEND_HOST(BACKEND_IP_1, BACKEND_IP_2, BACKEND_IP_3, BACKEND_IP_4);
 const uint16_t BACKEND_PORT = 5000;
 
 typedef struct {
@@ -1002,6 +1016,16 @@ void postReadingToBackend() {
 
   if (!client.connect(BACKEND_HOST, BACKEND_PORT)) {
     Serial.println("TCP connect failed");
+    Serial.print("Gateway local IP: ");
+    Serial.println(WiFi.localIP());
+    Serial.print("Gateway default gateway: ");
+    Serial.println(WiFi.gatewayIP());
+    Serial.print("Gateway RSSI: ");
+    Serial.println(WiFi.RSSI());
+    Serial.print("Configured backend URL: ");
+    Serial.println(BACKEND_URL);
+    Serial.print("Wi-Fi status: ");
+    Serial.println(WiFi.status());
     Serial.println("------------------------");
     client.stop();
     return;
@@ -1028,7 +1052,7 @@ void postReadingToBackend() {
       data.altitude,
       data.seaLevelPressureHpa,
       data.altitudeEstimated,
-      soilPercent,
+      data.soilMoisture,
       data.soilMoisture,
       soilPercent,
       data.dhtOk,

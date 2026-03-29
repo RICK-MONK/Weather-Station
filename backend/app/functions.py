@@ -1,9 +1,13 @@
+import logging
 from datetime import datetime, timezone
 
 from pymongo import DESCENDING, MongoClient
 from pymongo.errors import PyMongoError
 
 from app.config import Config
+
+
+logger = logging.getLogger(__name__)
 
 
 class DB:
@@ -20,13 +24,31 @@ class DB:
         if self.collection is not None:
             return self.collection
 
+        client_options = {"serverSelectionTimeoutMS": 5000}
         if self.mongo_uri:
-            self.client = MongoClient(self.mongo_uri)
+            logger.info("Connecting to MongoDB using MONGO_URI")
+            self.client = MongoClient(self.mongo_uri, **client_options)
         else:
-            self.client = MongoClient(self.mongo_host, self.mongo_port)
+            logger.info(
+                "Connecting to MongoDB at %s:%s",
+                self.mongo_host,
+                self.mongo_port,
+            )
+            self.client = MongoClient(
+                self.mongo_host,
+                self.mongo_port,
+                **client_options,
+            )
+
+        self.client.admin.command("ping")
 
         database = self.client[self.mongo_db]
         self.collection = database[self.mongo_collection]
+        logger.info(
+            "MongoDB ready on %s.%s",
+            self.mongo_db,
+            self.mongo_collection,
+        )
         return self.collection
 
     def _normalize_weather_payload(self, data):
@@ -77,11 +99,19 @@ class DB:
             collection = self._get_collection()
             result = collection.insert_one(document_to_insert)
         except PyMongoError as exc:
+            logger.exception("MongoDB write failed")
             return {
                 "status": "error",
                 "message": f"Database write failed: {exc}",
                 "data": document,
             }
+
+        logger.info(
+            "MongoDB insert complete id=%s device=%s timestamp=%s",
+            result.inserted_id,
+            document["id"],
+            document["timestamp"],
+        )
 
         return {
             "status": "complete",
@@ -95,17 +125,24 @@ class DB:
             collection = self._get_collection()
             latest = collection.find_one(sort=[("timestamp", DESCENDING), ("_id", DESCENDING)])
         except PyMongoError as exc:
+            logger.exception("MongoDB read for latest weather failed")
             return {
                 "status": "error",
                 "message": f"Database read failed: {exc}",
             }
 
         if latest is None:
+            logger.info("MongoDB latest weather query returned no documents")
             return {
                 "status": "empty",
                 "message": "No weather data available",
             }
 
+        logger.info(
+            "MongoDB latest weather id=%s timestamp=%s",
+            latest.get("id"),
+            latest.get("timestamp"),
+        )
         latest["_id"] = str(latest["_id"])
         return latest
 
@@ -124,16 +161,19 @@ class DB:
                 document["_id"] = str(document["_id"])
                 documents.append(document)
         except PyMongoError as exc:
+            logger.exception("MongoDB recent weather query failed")
             return {
                 "status": "error",
                 "message": f"Database read failed: {exc}",
             }
 
         if not documents:
+            logger.info("MongoDB recent weather query returned no documents")
             return {
                 "status": "empty",
                 "message": "No weather data available",
             }
 
+        logger.info("MongoDB recent weather query returned %s documents", len(documents))
         documents.reverse()
         return documents

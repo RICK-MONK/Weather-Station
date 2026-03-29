@@ -29,7 +29,7 @@
 
 // BMP280 measures local pressure directly. Altitude is derived from pressure
 // using this calibrated sea-level reference for the project location.
-constexpr float SEA_LEVEL_PRESSURE_HPA = 1032.0f;
+constexpr float SEA_LEVEL_PRESSURE_HPA = 1013.25f;
 
 DHT dht(DHTPIN, DHTTYPE);
 Adafruit_BMP280 bmp;
@@ -136,7 +136,7 @@ void printSoilDebug(int soilRaw, int soilPercent) {
 #endif
 }
 
-void printSenderReading(const SensorData &reading, int soilPercent) {
+void printSenderReading(const SensorData &reading, int soilPercent, bool bmpFallbackUsed) {
   Serial.println("Sender sample");
   Serial.print("Temperature: ");
   Serial.print(reading.temperature, 1);
@@ -147,15 +147,29 @@ void printSenderReading(const SensorData &reading, int soilPercent) {
   Serial.print("Heat Index: ");
   Serial.print(reading.heatIndex, 1);
   Serial.println(" C");
-  Serial.print("Pressure: ");
-  Serial.print(reading.pressure, 1);
-  Serial.println(" hPa");
-  Serial.print("Estimated Altitude: ");
-  Serial.print(reading.altitude, 1);
-  Serial.println(" m");
-  Serial.print("Sea-Level Ref: ");
-  Serial.print(reading.seaLevelPressureHpa, 1);
-  Serial.println(" hPa");
+  if (reading.bmpOk) {
+    Serial.print("Pressure: ");
+    Serial.print(reading.pressure, 1);
+    Serial.println(" hPa");
+    Serial.print("Estimated Altitude: ");
+    Serial.print(reading.altitude, 1);
+    Serial.println(" m");
+    Serial.print("Sea-Level Ref: ");
+    Serial.print(reading.seaLevelPressureHpa, 1);
+    Serial.println(" hPa");
+  } else if (bmpFallbackUsed) {
+    Serial.print("Pressure: ");
+    Serial.print(reading.pressure, 1);
+    Serial.println(" hPa (stale fallback)");
+    Serial.print("Estimated Altitude: ");
+    Serial.print(reading.altitude, 1);
+    Serial.println(" m (stale fallback)");
+    Serial.println("Sea-Level Ref: fallback sample retained because current BMP read was invalid");
+  } else {
+    Serial.println("Pressure: INVALID");
+    Serial.println("Estimated Altitude: INVALID");
+    Serial.println("Sea-Level Ref: BMP unavailable");
+  }
   Serial.print("Soil Raw: ");
   Serial.println(reading.soilMoisture);
   Serial.print("Soil Moisture: ");
@@ -258,29 +272,48 @@ bool readBmp280(float &pressure, float &altitude) {
       continue;
     }
 
-    // Pressure is the primary BMP280 reading. Altitude is an estimate derived
-    // from that pressure using the calibrated project reference above.
-    pressure = bmp.readPressure() / 100.0f;
-    altitude = bmp.readAltitude(SEA_LEVEL_PRESSURE_HPA);
-
-    if (
-      !isnan(pressure) &&
-      !isnan(altitude) &&
-      pressure >= PRESSURE_MIN_HPA &&
-      pressure <= PRESSURE_MAX_HPA &&
-      altitude >= -1000.0f &&
-      altitude <= 10000.0f
-    ) {
-      return true;
+    // Pressure is the primary BMP280 reading. Compute altitude only after the
+    // pressure value itself passes validation.
+    const float rawPressure = bmp.readPressure() / 100.0f;
+    if (isnan(rawPressure)) {
+      Serial.print("BMP280 validation failed on attempt ");
+      Serial.print(attempt);
+      Serial.println(": pressure is NaN");
+    } else if (rawPressure < PRESSURE_MIN_HPA || rawPressure > PRESSURE_MAX_HPA) {
+      Serial.print("BMP280 validation failed on attempt ");
+      Serial.print(attempt);
+      Serial.print(": pressure out of range raw=");
+      Serial.print(rawPressure, 3);
+      Serial.println(" hPa");
+    } else {
+      const float rawAltitude = bmp.readAltitude(SEA_LEVEL_PRESSURE_HPA);
+      if (isnan(rawAltitude)) {
+        Serial.print("BMP280 validation failed on attempt ");
+        Serial.print(attempt);
+        Serial.println(": altitude is NaN");
+      } else if (rawAltitude < -1000.0f || rawAltitude > 10000.0f) {
+        Serial.print("BMP280 validation failed on attempt ");
+        Serial.print(attempt);
+        Serial.print(": altitude out of range raw=");
+        Serial.print(rawAltitude, 3);
+        Serial.println(" m");
+      } else {
+        pressure = rawPressure;
+        altitude = rawAltitude;
+        return true;
+      }
     }
 
     Serial.print("BMP280 read failed on attempt ");
     Serial.print(attempt);
-    Serial.println(", reinitializing sensor...");
+    Serial.print(", reinitializing sensor at 0x");
+    Serial.println(bmpAddress, HEX);
     bmpReady = false;
     delay(100);
   }
 
+  pressure = NAN;
+  altitude = NAN;
   return false;
 }
 
@@ -356,6 +389,7 @@ void loop() {
   float altitude = NAN;
   int soilRaw = -1;
   int soilPercent = -1;
+  bool bmpFallbackUsed = false;
 
   const bool dhtOk = readDhtValues(t, h, hi);
   const bool bmpOk = readBmp280(pressure, altitude);
@@ -382,7 +416,8 @@ void loop() {
   } else if (smootherHasSamples(pressureSmoother) && smootherHasSamples(altitudeSmoother)) {
     pressure = getSmootherAverage(pressureSmoother);
     altitude = getSmootherAverage(altitudeSmoother);
-    Serial.println("Using last valid BMP280 readings");
+    bmpFallbackUsed = true;
+    Serial.println("Current BMP280 read invalid, using last valid BMP280 baseline");
   }
 
   if (soilOk) {
@@ -422,13 +457,13 @@ void loop() {
   data.altitude = altitude;
   data.seaLevelPressureHpa = SEA_LEVEL_PRESSURE_HPA;
   data.soilMoisture = soilRaw;
-  data.altitudeEstimated = 1;
+  data.altitudeEstimated = bmpOk ? 1 : 0;
   data.dhtOk = dhtOk ? 1 : 0;
   data.bmpOk = bmpOk ? 1 : 0;
   data.soilOk = soilOk ? 1 : 0;
   data.sampleMillis = millis();
 
-  printSenderReading(data, soilPercent);
+  printSenderReading(data, soilPercent, bmpFallbackUsed);
 
   esp_err_t result = esp_now_send(displayAddress, (uint8_t *)&data, sizeof(data));
 

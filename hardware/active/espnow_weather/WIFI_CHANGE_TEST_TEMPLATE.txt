@@ -10,22 +10,34 @@ CURRENT EXAMPLE BASED ON YOUR SCREENSHOT
 
 Paste this into `display_espnow_weather_gateway.ino` and replace the existing Wi-Fi/backend constants:
 
+#define STRINGIFY_INNER(value) #value
+#define STRINGIFY(value) STRINGIFY_INNER(value)
+#define BACKEND_IP_1 172
+#define BACKEND_IP_2 20
+#define BACKEND_IP_3 10
+#define BACKEND_IP_4 4
 const char* WIFI_SSID = "MonaConnect";
 const char* WIFI_PASSWORD = "";
-const char* BACKEND_URL = "http://172.16.192.54:5000/api/weather/update";
+const char* BACKEND_URL = "http://" STRINGIFY(BACKEND_IP_1) "." STRINGIFY(BACKEND_IP_2) "." STRINGIFY(BACKEND_IP_3) "." STRINGIFY(BACKEND_IP_4) ":5000/api/weather/update";
 const char* DEVICE_ID = "620169874";
-IPAddress BACKEND_HOST(172, 16, 192, 54);
+IPAddress BACKEND_HOST(BACKEND_IP_1, BACKEND_IP_2, BACKEND_IP_3, BACKEND_IP_4);
 const uint16_t BACKEND_PORT = 5000;
 
 GENERIC BLANK TEMPLATE
 
 Use this block any time you move to a different Wi-Fi network:
 
+#define STRINGIFY_INNER(value) #value
+#define STRINGIFY(value) STRINGIFY_INNER(value)
+#define BACKEND_IP_1 YOUR_IP_1
+#define BACKEND_IP_2 YOUR_IP_2
+#define BACKEND_IP_3 YOUR_IP_3
+#define BACKEND_IP_4 YOUR_IP_4
 const char* WIFI_SSID = "YOUR_WIFI_NAME";
 const char* WIFI_PASSWORD = "YOUR_WIFI_PASSWORD";
-const char* BACKEND_URL = "http://YOUR_PC_IP:5000/api/weather/update";
+const char* BACKEND_URL = "http://" STRINGIFY(BACKEND_IP_1) "." STRINGIFY(BACKEND_IP_2) "." STRINGIFY(BACKEND_IP_3) "." STRINGIFY(BACKEND_IP_4) ":5000/api/weather/update";
 const char* DEVICE_ID = "620169874";
-IPAddress BACKEND_HOST(YOUR_IP_1, YOUR_IP_2, YOUR_IP_3, YOUR_IP_4);
+IPAddress BACKEND_HOST(BACKEND_IP_1, BACKEND_IP_2, BACKEND_IP_3, BACKEND_IP_4);
 const uint16_t BACKEND_PORT = 5000;
 
 CHANNEL CHECK FOR ESP-NOW
@@ -46,7 +58,7 @@ Example:
 QUICK TEST CHECKLIST
 
 1. Start the backend on your computer so it is listening on port `5000`.
-2. Confirm your computer IP on the new Wi-Fi and update `BACKEND_URL` + `BACKEND_HOST`.
+2. Confirm your computer IP on the new Wi-Fi and update the `BACKEND_IP_*` octets once.
 3. Make sure the Wi-Fi network is `2.4 GHz`, not `5 GHz`.
 4. Flash the gateway and check for `Wi-Fi connected`.
 5. Check the printed Wi-Fi channel and set the sender/gateway `ESPNOW_WIFI_CHANNEL` to match.
@@ -54,5 +66,5 @@ QUICK TEST CHECKLIST
 
 IF WIFI CHANGES AGAIN
 
-- The two values you will usually need to change are the Wi-Fi name and the backend IP.
+- The two values you will usually need to change are the Wi-Fi name and the `BACKEND_IP_*` octets.
 - If the new network uses a different `2.4 GHz` channel, update `ESPNOW_WIFI_CHANNEL` in both sketches.
