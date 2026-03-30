@@ -15,5 +15,6 @@ By default the frontend calls `http://<current-host>:5000`; set `VITE_API_BASE_U
 ## Notes
 
 - `src/views/WeatherDashboard.vue` contains the starter dashboard page.
+- `src/views/WeatherControl.vue` contains the API-backed control panel for maintenance mode and queued device actions.
 - `src/router/index.js` defines the dashboard route.
 - `src/store/weather.js` contains a simple weather data store.

@@ -20,6 +20,8 @@ Override with `FLASK_HOST`, `FLASK_PORT`, or `FLASK_DEBUG` in your environment i
 - `POST /api/weather/update`
 - `GET /api/weather/latest`
 - `GET /api/weather/recent?limit=50`
+- `GET /api/control/status`
+- `POST /api/control/action`
 
 ## Weather Payload
 
@@ -45,6 +47,28 @@ Override with `FLASK_HOST`, `FLASK_PORT`, or `FLASK_DEBUG` in your environment i
 ```
 
 The backend adds `timestamp` before storing the document in MongoDB.
+
+## Control API
+
+`GET /api/control/status` returns maintenance mode, queue depth, recent control activity, and the latest weather snapshot metadata used by the frontend control panel.
+
+`POST /api/control/action` expects JSON like:
+
+```json
+{
+  "action": "queue-gateway-restart"
+}
+```
+
+Supported actions:
+
+- `enable-maintenance`
+- `disable-maintenance`
+- `acknowledge-alerts`
+- `queue-gateway-refresh`
+- `queue-gateway-restart`
+- `queue-sensor-restart`
+- `clear-pending-commands`
 
 ## Notes
 

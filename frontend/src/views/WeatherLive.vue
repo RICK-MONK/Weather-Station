@@ -26,7 +26,7 @@
           <div class="chart-header">
             <div>
               <p class="chart-eyebrow">Recent history</p>
-              <h3 class="chart-title">{{ config.chartTitle }}</h3>
+              <h3 class="chart-title">{{ chartTitleWithUnits }}</h3>
             </div>
           </div>
           <div class="legend-row">
@@ -35,6 +35,32 @@
             </span>
           </div>
           <svg class="chart-svg" viewBox="0 0 900 260" preserveAspectRatio="none">
+            <g v-for="tick in chartMeta.xTicks" :key="`x-${tick.index}`">
+              <line
+                :x1="tick.x"
+                :x2="tick.x"
+                :y1="chartMeta.height - chartMeta.padding.bottom"
+                :y2="chartMeta.height - chartMeta.padding.bottom + 6"
+                class="axis-line"
+              />
+              <text
+                :x="tick.x"
+                :y="chartMeta.height - 10"
+                class="axis-label"
+                text-anchor="middle"
+              >
+                {{ tick.label }}
+              </text>
+            </g>
+
+            <line
+              :x1="chartMeta.padding.left"
+              :x2="chartMeta.width - chartMeta.padding.right"
+              :y1="chartMeta.height - chartMeta.padding.bottom"
+              :y2="chartMeta.height - chartMeta.padding.bottom"
+              class="axis-line"
+            />
+
             <polyline
               v-for="series in activeSeries"
               :key="series.label"
@@ -45,6 +71,15 @@
               stroke-linecap="round"
               stroke-linejoin="round"
             />
+
+            <text
+              :x="chartMeta.width / 2"
+              :y="chartMeta.height - 2"
+              class="axis-title"
+              text-anchor="middle"
+            >
+              Time
+            </text>
           </svg>
         </article>
       </section>
@@ -74,55 +109,55 @@ const sensorConfig = {
   temperature: {
     title: 'Temperature trend monitor',
     description: 'Track how ambient temperature changes across recent gateway samples.',
-    chartTitle: 'Temperature and heat response',
+    chartTitleBase: 'Temperature and heat response',
     series: [
-      { key: 'temperature', label: 'Temperature', color: '#f4b73b' },
-      { key: 'heatIndex', label: 'Heat Index', color: '#ff7a5a' },
+      { key: 'temperature', baseLabel: 'Temperature', color: '#f4b73b' },
+      { key: 'heatIndex', baseLabel: 'Heat Index', color: '#ff7a5a' },
     ],
   },
   humidity: {
     title: 'Humidity trend monitor',
     description: 'Watch relative humidity in context with temperature swing.',
-    chartTitle: 'Humidity and temperature',
+    chartTitleBase: 'Humidity and temperature',
     series: [
-      { key: 'humidity', label: 'Humidity', color: '#4a9fff' },
-      { key: 'temperature', label: 'Temperature', color: '#f4b73b' },
+      { key: 'humidity', baseLabel: 'Humidity', color: '#4a9fff' },
+      { key: 'temperature', baseLabel: 'Temperature', color: '#f4b73b' },
     ],
   },
   'heat-index': {
     title: 'Heat index trend monitor',
     description: 'Observe heat stress risk with temperature and humidity context.',
-    chartTitle: 'Heat index / temperature / humidity',
+    chartTitleBase: 'Heat index / temperature / humidity',
     series: [
-      { key: 'heatIndex', label: 'Heat Index', color: '#ff7a5a' },
-      { key: 'temperature', label: 'Temperature', color: '#f4b73b' },
-      { key: 'humidity', label: 'Humidity', color: '#4a9fff' },
+      { key: 'heatIndex', baseLabel: 'Heat Index', color: '#ff7a5a' },
+      { key: 'temperature', baseLabel: 'Temperature', color: '#f4b73b' },
+      { key: 'humidity', baseLabel: 'Humidity', color: '#4a9fff' },
     ],
   },
   pressure: {
     title: 'Pressure trend monitor',
     description: 'Watch atmospheric pressure movement over the latest readings.',
-    chartTitle: 'Pressure and estimated altitude',
+    chartTitleBase: 'Pressure and estimated altitude',
     series: [
-      { key: 'pressure', label: 'Pressure', color: '#4f7a50' },
-      { key: 'altitude', label: 'Estimated Altitude', color: '#8d63c7' },
+      { key: 'pressure', baseLabel: 'Pressure', color: '#4f7a50' },
+      { key: 'altitude', baseLabel: 'Estimated Altitude', color: '#8d63c7' },
     ],
   },
   altitude: {
     title: 'Estimated altitude trend monitor',
-    description: 'Review the derived altitude estimate in relation to pressure changes and the calibrated sea-level reference.',
-    chartTitle: 'Estimated altitude and pressure',
+    description: 'Review the derived altitude estimate in relation to pressure changes and the configured sea-level reference.',
+    chartTitleBase: 'Estimated altitude and pressure',
     series: [
-      { key: 'altitude', label: 'Estimated Altitude', color: '#8d63c7' },
-      { key: 'pressure', label: 'Pressure', color: '#4f7a50' },
+      { key: 'altitude', baseLabel: 'Estimated Altitude', color: '#8d63c7' },
+      { key: 'pressure', baseLabel: 'Pressure', color: '#4f7a50' },
     ],
   },
   'soil-moisture': {
     title: 'Soil moisture trend monitor',
     description: 'Follow the calibrated soil moisture percentage across the recent sensor window.',
-    chartTitle: 'Soil moisture percentage history',
+    chartTitleBase: 'Soil moisture percentage history',
     series: [
-      { key: 'soilMoisturePercent', label: 'Soil Moisture %', color: '#00a6a6' },
+      { key: 'soilMoisturePercent', baseLabel: 'Soil Moisture', color: '#00a6a6' },
     ],
   },
 }
@@ -132,7 +167,9 @@ function buildSeries(readings, key, color, label) {
     return { color, label, points: '' }
   }
 
-  const values = readings.map((reading) => Number(reading[key])).filter((value) => Number.isFinite(value))
+  const values = readings
+    .map((reading) => weatherStore.convertValue(key, Number(reading[key])))
+    .filter((value) => Number.isFinite(value))
   if (!values.length) {
     return { color, label, points: '' }
   }
@@ -142,14 +179,21 @@ function buildSeries(readings, key, color, label) {
   const spread = maxValue - minValue || 1
   const width = 900
   const height = 260
-  const inset = 18
-  const step = values.length > 1 ? (width - inset * 2) / (values.length - 1) : 0
+  const padding = {
+    top: 18,
+    right: 18,
+    bottom: 34,
+    left: 18,
+  }
+  const plotWidth = width - padding.left - padding.right
+  const plotHeight = height - padding.top - padding.bottom
+  const step = values.length > 1 ? plotWidth / (values.length - 1) : 0
 
   const points = values
     .map((value, index) => {
-      const x = inset + step * index
+      const x = padding.left + step * index
       const normalized = (value - minValue) / spread
-      const y = height - inset - normalized * (height - inset * 2)
+      const y = height - padding.bottom - normalized * plotHeight
       return `${x.toFixed(1)},${y.toFixed(1)}`
     })
     .join(' ')
@@ -157,11 +201,61 @@ function buildSeries(readings, key, color, label) {
   return { color, label, points }
 }
 
+const chartMeta = computed(() => {
+  const width = 900
+  const height = 260
+  const padding = {
+    top: 18,
+    right: 18,
+    bottom: 34,
+    left: 18,
+  }
+
+  const validReadings = weatherStore.recentReadings.filter((reading) => Number.isFinite(Number(reading.timestamp)))
+  const plotWidth = width - padding.left - padding.right
+  const step = validReadings.length > 1 ? plotWidth / (validReadings.length - 1) : 0
+
+  const tickIndexes = validReadings.length <= 5
+    ? validReadings.map((_, index) => index)
+    : [0, Math.floor((validReadings.length - 1) / 3), Math.floor(((validReadings.length - 1) * 2) / 3), validReadings.length - 1]
+
+  const xTicks = [...new Set(tickIndexes)].map((index) => ({
+    index,
+    x: Number((padding.left + step * index).toFixed(1)),
+    label: new Date(Number(validReadings[index].timestamp) * 1000).toLocaleTimeString([], {
+      hour: '2-digit',
+      minute: '2-digit',
+    }),
+  }))
+
+  return {
+    width,
+    height,
+    padding,
+    xTicks,
+  }
+})
+
 const config = computed(() => sensorConfig[route.params.sensor] || sensorConfig.temperature)
+const chartTitleWithUnits = computed(() => {
+  const labels = config.value.series.map((series) => {
+    const unit = weatherStore.getUnitLabel(series.key)
+    return unit ? `${series.baseLabel} (${unit})` : series.baseLabel
+  })
+
+  return labels.join(' / ')
+})
 
 const activeSeries = computed(() =>
   config.value.series.map((series) =>
-    buildSeries(weatherStore.recentReadings, series.key, series.color, series.label),
+    buildSeries(
+      weatherStore.recentReadings,
+      series.key,
+      series.color,
+      weatherStore.getUnitLabel(series.key)
+        ? `${series.baseLabel} (${weatherStore.getUnitLabel(series.key)})`
+        : series.baseLabel,
+    ),
   ),
 )
 
@@ -308,6 +402,25 @@ onUnmounted(() => {
       transparent 42px,
       rgba(23, 36, 55, 0.08) 43px
     );
+}
+
+.axis-line {
+  stroke: rgba(23, 36, 55, 0.35);
+  stroke-width: 1.2;
+}
+
+.axis-label {
+  fill: #6d7f92;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.axis-title {
+  fill: #536981;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 @media (max-width: 960px) {

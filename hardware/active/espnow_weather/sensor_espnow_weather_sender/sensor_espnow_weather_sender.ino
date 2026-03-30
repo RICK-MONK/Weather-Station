@@ -1,6 +1,8 @@
 #include <WiFi.h>
 #include <esp_now.h>
 #include <esp_wifi.h>
+#include <HTTPClient.h>
+#include <WiFiClient.h>
 #include <Wire.h>
 #include <DHT.h>
 #include <Adafruit_BMP280.h>
@@ -26,15 +28,39 @@
 #define TEMP_MAX_C 80.0f
 #define PRESSURE_MIN_HPA 300.0f
 #define PRESSURE_MAX_HPA 1100.0f
+#define SENSOR_TRANSPORT_DIRECT_WIFI 1
+#define STRINGIFY_INNER(value) #value
+#define STRINGIFY(value) STRINGIFY_INNER(value)
+#define BACKEND_IP_1 172
+#define BACKEND_IP_2 16
+#define BACKEND_IP_3 193
+#define BACKEND_IP_4 242
+#define ALTITUDE_ESTIMATE_MIN_M -150.0f
+#define ALTITUDE_ESTIMATE_MAX_M 4000.0f
+#define ALTITUDE_ZERO_SNAP_M 5.0f
 
 // BMP280 measures local pressure directly. Altitude is derived from pressure
-// using this calibrated sea-level reference for the project location.
+// using this sea-level reference, so it should be treated as an estimate.
+// Tune this constant for the deployment site if you want the derived altitude
+// to better match the station's known elevation.
 constexpr float SEA_LEVEL_PRESSURE_HPA = 1013.25f;
 
 DHT dht(DHTPIN, DHTTYPE);
 Adafruit_BMP280 bmp;
 
 uint8_t displayAddress[] = {0xD4, 0xE9, 0xF4, 0xAF, 0x7B, 0xF0};
+const char* WIFI_SSID = "MonaConnect";
+const char* WIFI_PASSWORD = "";
+const char* DEVICE_ID = "620169874";
+const char* BACKEND_URL =
+    "http://"
+    STRINGIFY(BACKEND_IP_1) "."
+    STRINGIFY(BACKEND_IP_2) "."
+    STRINGIFY(BACKEND_IP_3) "."
+    STRINGIFY(BACKEND_IP_4)
+    ":5000/api/weather/update";
+IPAddress BACKEND_HOST(BACKEND_IP_1, BACKEND_IP_2, BACKEND_IP_3, BACKEND_IP_4);
+const uint16_t BACKEND_PORT = 5000;
 
 typedef struct {
   float temperature;
@@ -286,18 +312,22 @@ bool readBmp280(float &pressure, float &altitude) {
       Serial.print(rawPressure, 3);
       Serial.println(" hPa");
     } else {
-      const float rawAltitude = bmp.readAltitude(SEA_LEVEL_PRESSURE_HPA);
+      float rawAltitude = bmp.readAltitude(SEA_LEVEL_PRESSURE_HPA);
       if (isnan(rawAltitude)) {
         Serial.print("BMP280 validation failed on attempt ");
         Serial.print(attempt);
         Serial.println(": altitude is NaN");
-      } else if (rawAltitude < -1000.0f || rawAltitude > 10000.0f) {
+      } else if (rawAltitude < ALTITUDE_ESTIMATE_MIN_M || rawAltitude > ALTITUDE_ESTIMATE_MAX_M) {
         Serial.print("BMP280 validation failed on attempt ");
         Serial.print(attempt);
-        Serial.print(": altitude out of range raw=");
+        Serial.print(": estimated altitude out of range raw=");
         Serial.print(rawAltitude, 3);
         Serial.println(" m");
       } else {
+        if (fabs(rawAltitude) < ALTITUDE_ZERO_SNAP_M) {
+          rawAltitude = 0.0f;
+        }
+
         pressure = rawPressure;
         altitude = rawAltitude;
         return true;
@@ -329,6 +359,126 @@ bool readSoilValue(int &soilRaw, int &soilPercent) {
   return true;
 }
 
+bool ensureWiFiConnected() {
+  if (WiFi.status() == WL_CONNECTED) {
+    return true;
+  }
+
+  Serial.print("Connecting to Wi-Fi");
+  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+
+  for (int i = 0; i < 20 && WiFi.status() != WL_CONNECTED; i++) {
+    delay(500);
+    Serial.print(".");
+  }
+  Serial.println();
+
+  if (WiFi.status() == WL_CONNECTED) {
+    Serial.println("Wi-Fi connected");
+    Serial.print("IP: ");
+    Serial.println(WiFi.localIP());
+    Serial.print("Wi-Fi channel: ");
+    Serial.println(WiFi.channel());
+    return true;
+  }
+
+  Serial.println("Wi-Fi connection failed");
+  return false;
+}
+
+bool postReadingToBackend(const SensorData &reading, int soilPercent) {
+  Serial.println("----- SENSOR POST -----");
+
+  if (!ensureWiFiConnected()) {
+    Serial.println("Abort: Wi-Fi not connected");
+    Serial.println("-----------------------");
+    return false;
+  }
+
+  Serial.print("Backend URL: ");
+  Serial.println(BACKEND_URL);
+  Serial.print("Wi-Fi status: ");
+  Serial.println(WiFi.status());
+  Serial.print("Sender local IP: ");
+  Serial.println(WiFi.localIP());
+  Serial.print("Sender default gateway: ");
+  Serial.println(WiFi.gatewayIP());
+  Serial.print("Sender RSSI: ");
+  Serial.println(WiFi.RSSI());
+
+  WiFiClient client;
+  Serial.print("Testing TCP connection to ");
+  Serial.print(BACKEND_HOST);
+  Serial.print(":");
+  Serial.println(BACKEND_PORT);
+
+  if (!client.connect(BACKEND_HOST, BACKEND_PORT)) {
+    Serial.println("TCP connect failed");
+    Serial.println("-----------------------");
+    client.stop();
+    return false;
+  }
+
+  Serial.println("TCP connect succeeded");
+  client.stop();
+
+  HTTPClient http;
+  http.setTimeout(5000);
+  Serial.println("Starting HTTP client...");
+  const bool beginOk = http.begin(client, BACKEND_URL);
+  Serial.print("http.begin: ");
+  Serial.println(beginOk ? "OK" : "FAILED");
+  if (!beginOk) {
+    Serial.println("Abort: HTTP client could not start");
+    Serial.println("-----------------------");
+    return false;
+  }
+  http.addHeader("Content-Type", "application/json");
+
+  char payload[384];
+  snprintf(
+      payload,
+      sizeof(payload),
+      "{\"id\":\"%s\",\"type\":\"weather\",\"temperature\":%.1f,\"humidity\":%.1f,\"heatIndex\":%.1f,\"pressure\":%.1f,\"altitude\":%.1f,\"seaLevelPressureHpa\":%.1f,\"altitudeEstimated\":%u,\"soilMoisture\":%d,\"soilRaw\":%d,\"soilMoisturePercent\":%d,\"dhtOk\":%u,\"bmpOk\":%u,\"soilOk\":%u,\"sampleMillis\":%lu}",
+      DEVICE_ID,
+      reading.temperature,
+      reading.humidity,
+      reading.heatIndex,
+      reading.pressure,
+      reading.altitude,
+      reading.seaLevelPressureHpa,
+      reading.altitudeEstimated,
+      reading.soilMoisture,
+      reading.soilMoisture,
+      soilPercent,
+      reading.dhtOk,
+      reading.bmpOk,
+      reading.soilOk,
+      static_cast<unsigned long>(reading.sampleMillis));
+
+  Serial.print("Payload bytes: ");
+  Serial.println(strlen(payload));
+  Serial.print("Payload: ");
+  Serial.println(payload);
+  Serial.println("Sending POST...");
+  const int httpCode = http.POST(payload);
+  Serial.print("Backend HTTP code: ");
+  Serial.println(httpCode);
+
+  if (httpCode > 0) {
+    Serial.println("Backend forward: OK");
+    Serial.print("Response: ");
+    Serial.println(http.getString());
+  } else {
+    Serial.print("POST failed, error: ");
+    Serial.println(http.errorToString(httpCode));
+  }
+
+  Serial.println("------------------------");
+  http.end();
+  return httpCode > 0;
+}
+
 void setup() {
   Serial.begin(115200);
   delay(2000);
@@ -346,8 +496,17 @@ void setup() {
   }
 
   WiFi.mode(WIFI_STA);
-  WiFi.disconnect();
   WiFi.setSleep(false);
+
+#if SENSOR_TRANSPORT_DIRECT_WIFI
+  Serial.println("Transport mode: direct Wi-Fi -> backend");
+  if (!ensureWiFiConnected()) {
+    return;
+  }
+  Serial.print("Backend target: ");
+  Serial.println(BACKEND_URL);
+#else
+  WiFi.disconnect();
   esp_wifi_set_promiscuous(true);
   esp_wifi_set_channel(ESPNOW_WIFI_CHANNEL, WIFI_SECOND_CHAN_NONE);
   esp_wifi_set_promiscuous(false);
@@ -379,6 +538,7 @@ void setup() {
   }
 
   Serial.println("ESP-NOW weather sender ready");
+#endif
 }
 
 void loop() {
@@ -465,10 +625,14 @@ void loop() {
 
   printSenderReading(data, soilPercent, bmpFallbackUsed);
 
+#if SENSOR_TRANSPORT_DIRECT_WIFI
+  postReadingToBackend(data, soilPercent);
+#else
   esp_err_t result = esp_now_send(displayAddress, (uint8_t *)&data, sizeof(data));
 
   Serial.print("ESP-NOW queue result: ");
   Serial.println(result == ESP_OK ? "OK" : "ERROR");
+#endif
 
   delay(2000);
 }

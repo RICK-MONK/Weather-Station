@@ -15,8 +15,8 @@
 #define STRINGIFY(value) STRINGIFY_INNER(value)
 #define BACKEND_IP_1 172
 #define BACKEND_IP_2 16
-#define BACKEND_IP_3 194
-#define BACKEND_IP_4 81
+#define BACKEND_IP_3 193
+#define BACKEND_IP_4 242
 
 const char* WIFI_SSID = "MonaConnect";
 const char* WIFI_PASSWORD = "";
@@ -1002,11 +1002,26 @@ bool ensureWiFiConnected() {
 }
 
 void postReadingToBackend() {
+  Serial.println("----- GATEWAY POST -----");
+
   if (!ensureWiFiConnected()) {
+    Serial.println("Abort: Wi-Fi not connected");
+    Serial.println("------------------------");
     return;
   }
 
   const int soilPercent = computeSoilPercent(data.soilMoisture);
+
+  Serial.print("Backend URL: ");
+  Serial.println(BACKEND_URL);
+  Serial.print("Wi-Fi status: ");
+  Serial.println(WiFi.status());
+  Serial.print("Gateway local IP: ");
+  Serial.println(WiFi.localIP());
+  Serial.print("Gateway default gateway: ");
+  Serial.println(WiFi.gatewayIP());
+  Serial.print("Gateway RSSI: ");
+  Serial.println(WiFi.RSSI());
 
   WiFiClient client;
   Serial.print("Testing TCP connection to ");
@@ -1016,16 +1031,6 @@ void postReadingToBackend() {
 
   if (!client.connect(BACKEND_HOST, BACKEND_PORT)) {
     Serial.println("TCP connect failed");
-    Serial.print("Gateway local IP: ");
-    Serial.println(WiFi.localIP());
-    Serial.print("Gateway default gateway: ");
-    Serial.println(WiFi.gatewayIP());
-    Serial.print("Gateway RSSI: ");
-    Serial.println(WiFi.RSSI());
-    Serial.print("Configured backend URL: ");
-    Serial.println(BACKEND_URL);
-    Serial.print("Wi-Fi status: ");
-    Serial.println(WiFi.status());
     Serial.println("------------------------");
     client.stop();
     return;
@@ -1036,7 +1041,15 @@ void postReadingToBackend() {
 
   HTTPClient http;
   http.setTimeout(5000);
-  http.begin(client, BACKEND_URL);
+  Serial.println("Starting HTTP client...");
+  const bool beginOk = http.begin(client, BACKEND_URL);
+  Serial.print("http.begin: ");
+  Serial.println(beginOk ? "OK" : "FAILED");
+  if (!beginOk) {
+    Serial.println("Abort: HTTP client could not start");
+    Serial.println("------------------------");
+    return;
+  }
   http.addHeader("Content-Type", "application/json");
 
   char payload[384];
@@ -1060,6 +1073,11 @@ void postReadingToBackend() {
       data.soilOk,
       static_cast<unsigned long>(data.sampleMillis));
 
+  Serial.print("Payload bytes: ");
+  Serial.println(strlen(payload));
+  Serial.print("Payload: ");
+  Serial.println(payload);
+  Serial.println("Sending POST...");
   int httpCode = http.POST(payload);
   Serial.print("Backend HTTP code: ");
   Serial.println(httpCode);
