@@ -1,0 +1,90 @@
+/* @theme weather-station */
+
+@import 'default';
+
+section {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 28px;
+  padding: 48px 56px;
+  background:
+    radial-gradient(circle at top right, rgba(28, 120, 150, 0.12), transparent 28%),
+    linear-gradient(180deg, #f7fafc 0%, #eef4f8 100%);
+  color: #183247;
+}
+
+section img {
+  max-width: 100%;
+  max-height: 430px;
+  object-fit: contain;
+}
+
+h1,
+h2,
+h3 {
+  color: #0f5b6e;
+}
+
+h1 {
+  font-size: 2em;
+  margin-bottom: 0.2em;
+}
+
+h2 {
+  font-size: 1.35em;
+  margin-bottom: 0.35em;
+}
+
+strong {
+  color: #0b7285;
+}
+
+code {
+  background: #e6f3f7;
+  color: #114b5f;
+  padding: 0.12em 0.28em;
+  border-radius: 0.2em;
+}
+
+table {
+  font-size: 0.76em;
+}
+
+ul,
+ol {
+  line-height: 1.35;
+}
+
+blockquote {
+  margin: 0.8em 0;
+  padding: 0.5em 0.8em;
+  border-left: 6px solid #1b7f95;
+  background: rgba(27, 127, 149, 0.08);
+}
+
+header,
+footer {
+  color: #4a677d;
+  font-size: 0.45em;
+}
+
+section.lead {
+  background: linear-gradient(135deg, #0d4250 0%, #17667c 100%);
+  color: #ffffff;
+}
+
+section.lead h1,
+section.lead h2,
+section.lead h3,
+section.lead strong,
+section.lead footer,
+section.lead header {
+  color: #ffffff;
+}
+
+section.small-text {
+  font-size: 23px;
+}
+
+section.center {
+  text-align: center;
+}

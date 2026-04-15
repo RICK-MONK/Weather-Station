@@ -1,0 +1,41 @@
+<svg width="1600" height="900" viewBox="0 0 1600 900" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1600" height="900" fill="#f6fbfd"/>
+  <rect x="50" y="60" width="1500" height="780" rx="34" fill="#ffffff" stroke="#d7e9f1" stroke-width="4"/>
+  <text x="800" y="125" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="44" font-weight="700" fill="#0f6078">Simplified Schematic Overview</text>
+
+  <rect x="120" y="200" width="420" height="170" rx="24" fill="#fef7ef" stroke="#f0b968" stroke-width="4"/>
+  <text x="330" y="255" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="34" font-weight="700" fill="#8e5a11">Power Stage</text>
+  <text x="330" y="305" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="26" fill="#4a677d">5V input</text>
+  <text x="330" y="340" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="26" fill="#4a677d">AMS1117 3.3V regulator</text>
+
+  <rect x="610" y="155" width="870" height="300" rx="24" fill="#eef7ff" stroke="#89b8ea" stroke-width="4"/>
+  <text x="1045" y="215" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="36" font-weight="700" fill="#24558a">ESP32 Module</text>
+  <rect x="925" y="245" width="240" height="140" rx="18" fill="#162635" stroke="#35546c" stroke-width="3"/>
+  <text x="1045" y="325" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="36" font-weight="700" fill="#ffffff">ESP-WROOM-32</text>
+  <text x="1045" y="365" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="22" fill="#b9d0df">core controller and radio</text>
+
+  <rect x="120" y="495" width="300" height="180" rx="22" fill="#eefcf1" stroke="#7bc796" stroke-width="4"/>
+  <rect x="460" y="495" width="300" height="180" rx="22" fill="#fef7ef" stroke="#f0b968" stroke-width="4"/>
+  <rect x="800" y="495" width="300" height="180" rx="22" fill="#f2f8ff" stroke="#89b8ea" stroke-width="4"/>
+  <rect x="1140" y="495" width="300" height="180" rx="22" fill="#f8f1ff" stroke="#b28ae8" stroke-width="4"/>
+
+  <text x="270" y="560" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="32" font-weight="700" fill="#28754a">DHT22 Input</text>
+  <text x="270" y="610" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="24" fill="#4a677d">GPIO 4</text>
+  <text x="610" y="560" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="32" font-weight="700" fill="#8e5a11">Soil Input</text>
+  <text x="610" y="610" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="24" fill="#4a677d">ADC GPIO 34</text>
+  <text x="950" y="560" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="32" font-weight="700" fill="#24558a">BMP280 I2C</text>
+  <text x="950" y="610" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="24" fill="#4a677d">SDA 21 | SCL 22</text>
+  <text x="1290" y="560" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="32" font-weight="700" fill="#6d42b8">Display / Gateway</text>
+  <text x="1290" y="610" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="24" fill="#4a677d">TFT + ESP-NOW + Wi-Fi</text>
+
+  <line x1="540" y1="285" x2="925" y2="285" stroke="#ff8b1f" stroke-width="10" stroke-linecap="round"/>
+  <polygon points="925,285 900,270 900,300" fill="#ff8b1f"/>
+  <text x="730" y="250" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="24" font-weight="700" fill="#ff8b1f">3.3V rail</text>
+
+  <line x1="270" y1="495" x2="965" y2="385" stroke="#35a853" stroke-width="8" stroke-linecap="round"/>
+  <line x1="610" y1="495" x2="1045" y2="385" stroke="#f59e0b" stroke-width="8" stroke-linecap="round"/>
+  <line x1="950" y1="495" x2="1125" y2="385" stroke="#2c7df0" stroke-width="8" stroke-linecap="round"/>
+  <line x1="1290" y1="495" x2="1165" y2="385" stroke="#7b4dff" stroke-width="8" stroke-linecap="round"/>
+
+  <text x="800" y="760" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="28" fill="#4a677d">Power regulation feeds the ESP32, then sensor and display interfaces connect through dedicated GPIO, ADC, and I2C paths</text>
+</svg>

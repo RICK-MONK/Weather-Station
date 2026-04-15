@@ -1,0 +1,61 @@
+<svg width="1600" height="900" viewBox="0 0 1600 900" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1600" height="900" fill="#f6fbfd"/>
+  <rect x="50" y="60" width="1500" height="780" rx="36" fill="#ffffff" stroke="#d5e8f1" stroke-width="4"/>
+  <text x="800" y="125" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="46" font-weight="700" fill="#0f6078">Sensor Node Wiring Diagram</text>
+
+  <rect x="640" y="255" width="360" height="330" rx="28" fill="#162635" stroke="#35546c" stroke-width="4"/>
+  <text x="820" y="315" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="40" font-weight="700" fill="#ffffff">ESP32</text>
+  <text x="820" y="360" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="24" fill="#b9d0df">Sensor Node</text>
+
+  <circle cx="675" cy="420" r="9" fill="#ff4b4b"/>
+  <circle cx="675" cy="470" r="9" fill="#1f1f1f"/>
+  <circle cx="675" cy="520" r="9" fill="#1d8cff"/>
+  <text x="710" y="426" font-family="Segoe UI, Arial, sans-serif" font-size="24" fill="#ffffff">3V3</text>
+  <text x="710" y="476" font-family="Segoe UI, Arial, sans-serif" font-size="24" fill="#ffffff">GND</text>
+  <text x="710" y="526" font-family="Segoe UI, Arial, sans-serif" font-size="24" fill="#ffffff">GPIO 4</text>
+
+  <circle cx="965" cy="400" r="9" fill="#1f1f1f"/>
+  <circle cx="965" cy="450" r="9" fill="#2c7df0"/>
+  <circle cx="965" cy="500" r="9" fill="#1db954"/>
+  <circle cx="965" cy="550" r="9" fill="#7b4dff"/>
+  <text x="930" y="406" text-anchor="end" font-family="Segoe UI, Arial, sans-serif" font-size="24" fill="#ffffff">GND</text>
+  <text x="930" y="456" text-anchor="end" font-family="Segoe UI, Arial, sans-serif" font-size="24" fill="#ffffff">GPIO 21 SDA</text>
+  <text x="930" y="506" text-anchor="end" font-family="Segoe UI, Arial, sans-serif" font-size="24" fill="#ffffff">GPIO 22 SCL</text>
+  <text x="930" y="556" text-anchor="end" font-family="Segoe UI, Arial, sans-serif" font-size="24" fill="#ffffff">3V3</text>
+
+  <circle cx="820" cy="620" r="9" fill="#f59e0b"/>
+  <circle cx="875" cy="620" r="9" fill="#1f1f1f"/>
+  <circle cx="930" cy="620" r="9" fill="#ff4b4b"/>
+  <text x="820" y="665" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="22" fill="#2b4558">GPIO 34</text>
+  <text x="875" y="665" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="22" fill="#2b4558">GND</text>
+  <text x="930" y="665" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="22" fill="#2b4558">3V3</text>
+
+  <rect x="140" y="270" width="230" height="180" rx="24" fill="#fef7ef" stroke="#f2b35d" stroke-width="4"/>
+  <text x="255" y="330" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="34" font-weight="700" fill="#925f11">DHT22</text>
+  <text x="255" y="385" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="26" fill="#5e6f7d">Temp + Humidity</text>
+  <text x="255" y="420" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="22" fill="#5e6f7d">VCC | DATA | GND</text>
+
+  <rect x="1210" y="250" width="250" height="220" rx="24" fill="#f2f8ff" stroke="#7cb1ef" stroke-width="4"/>
+  <text x="1335" y="315" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="34" font-weight="700" fill="#24558a">BMP280</text>
+  <text x="1335" y="372" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="26" fill="#5e6f7d">Pressure + Altitude</text>
+  <text x="1335" y="410" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="22" fill="#5e6f7d">VCC | GND | SDA | SCL</text>
+
+  <rect x="1260" y="590" width="210" height="150" rx="24" fill="#eefcf1" stroke="#77c796" stroke-width="4"/>
+  <text x="1365" y="648" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="32" font-weight="700" fill="#28754a">Soil Sensor</text>
+  <text x="1365" y="695" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="22" fill="#5e6f7d">AO | GND | VCC</text>
+
+  <line x1="370" y1="320" x2="666" y2="420" stroke="#ff4b4b" stroke-width="8" stroke-linecap="round"/>
+  <line x1="370" y1="420" x2="666" y2="470" stroke="#1f1f1f" stroke-width="8" stroke-linecap="round"/>
+  <line x1="370" y1="370" x2="666" y2="520" stroke="#1d8cff" stroke-width="8" stroke-linecap="round"/>
+
+  <line x1="1210" y1="410" x2="974" y2="550" stroke="#ff4b4b" stroke-width="8" stroke-linecap="round"/>
+  <line x1="1210" y1="385" x2="974" y2="400" stroke="#1f1f1f" stroke-width="8" stroke-linecap="round"/>
+  <line x1="1210" y1="430" x2="974" y2="450" stroke="#2c7df0" stroke-width="8" stroke-linecap="round"/>
+  <line x1="1210" y1="455" x2="974" y2="500" stroke="#1db954" stroke-width="8" stroke-linecap="round"/>
+
+  <line x1="1260" y1="660" x2="829" y2="620" stroke="#f59e0b" stroke-width="8" stroke-linecap="round"/>
+  <line x1="1260" y1="690" x2="884" y2="620" stroke="#1f1f1f" stroke-width="8" stroke-linecap="round"/>
+  <line x1="1260" y1="720" x2="939" y2="620" stroke="#ff4b4b" stroke-width="8" stroke-linecap="round"/>
+
+  <text x="800" y="785" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="28" fill="#4a677d">Digital DHT22 on GPIO 4, I2C BMP280 on GPIO 21/22, analog soil sensor on GPIO 34</text>
+</svg>

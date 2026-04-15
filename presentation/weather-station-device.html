@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Weather Station Device</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      width: 900px;
+      height: 900px;
+      overflow: hidden;
+      display: grid;
+      place-items: center;
+      background:
+        radial-gradient(circle at 50% 20%, rgba(250, 204, 21, 0.12), transparent 20%),
+        linear-gradient(180deg, #edf7fb 0%, #dde9f1 100%);
+      font-family: Arial, Helvetica, sans-serif;
+    }
+    .device {
+      width: 620px;
+      height: 450px;
+      border-radius: 30px;
+      background: linear-gradient(160deg, #2b3238 0%, #12181d 100%);
+      box-shadow: 0 30px 70px rgba(13, 39, 58, 0.28);
+      padding: 20px;
+      position: relative;
+    }
+    .screen {
+      width: 100%;
+      height: 100%;
+      border-radius: 24px;
+      background:
+        radial-gradient(circle at 16% 16%, rgba(250, 204, 21, 0.14), transparent 18%),
+        linear-gradient(180deg, #07131d 0%, #0b1924 100%);
+      border: 2px solid rgba(255,255,255,0.06);
+      padding: 24px;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      gap: 18px;
+      color: #e7f7ff;
+    }
+    .top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: #22d3ee;
+      font-weight: 800;
+      font-size: 22px;
+    }
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 16px;
+    }
+    .status .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #84cc16;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 18px;
+    }
+    .left {
+      display: grid;
+      grid-template-rows: 1fr 1fr;
+      gap: 18px;
+    }
+    .card {
+      border-radius: 18px;
+      background: rgba(18, 32, 44, 0.92);
+      border: 1px solid rgba(255,255,255,0.05);
+      padding: 18px;
+    }
+    .label {
+      color: #88a8bb;
+      font-size: 14px;
+      letter-spacing: 0.14em;
+      font-weight: 700;
+      margin-bottom: 14px;
+    }
+    .temp {
+      font-size: 76px;
+      line-height: 0.95;
+      color: #facc15;
+      font-weight: 800;
+    }
+    .sub {
+      margin-top: 12px;
+      display: grid;
+      gap: 8px;
+      font-size: 19px;
+    }
+    .sub span:nth-child(1) { color: #38bdf8; }
+    .sub span:nth-child(2) { color: #f97316; }
+    .sub span:nth-child(3) { color: #a3e635; }
+    .soil .value {
+      font-size: 68px;
+      color: #22d3ee;
+      font-weight: 800;
+    }
+    .bar {
+      margin-top: 14px;
+      height: 14px;
+      border-radius: 999px;
+      background: #07111b;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.04);
+    }
+    .bar::after {
+      content: "";
+      display: block;
+      height: 100%;
+      width: 64%;
+      background: linear-gradient(90deg, #22d3ee 0%, #facc15 100%);
+    }
+    .right {
+      display: grid;
+      gap: 18px;
+    }
+    .mini {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-height: 130px;
+    }
+    .mini .big {
+      font-size: 42px;
+      font-weight: 800;
+      color: #a3e635;
+    }
+    .mini:nth-child(2) .big { color: #f472b6; }
+    .footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 16px;
+      font-weight: 700;
+    }
+    .live {
+      padding: 10px 14px;
+      border-radius: 12px;
+      color: #22d3ee;
+      background: rgba(34, 211, 238, 0.12);
+      border: 1px solid rgba(34, 211, 238, 0.18);
+    }
+    .age { color: #c6d4dc; }
+  </style>
+</head>
+<body>
+  <div class="device">
+    <div class="screen">
+      <div class="top">
+        <span>SMARTY WX</span>
+        <span class="status"><span class="dot"></span> ONLINE</span>
+      </div>
+      <div class="grid">
+        <div class="left">
+          <div class="card">
+            <div class="label">CLIMATE</div>
+            <div class="temp">24.4 C</div>
+            <div class="sub">
+              <span>Humidity 61%</span>
+              <span>Heat Index 25.8 C</span>
+              <span>Comfort: Stable</span>
+            </div>
+          </div>
+          <div class="card soil">
+            <div class="label">SOIL MOISTURE</div>
+            <div class="value">62%</div>
+            <div class="bar"></div>
+          </div>
+        </div>
+        <div class="right">
+          <div class="card mini">
+            <div class="label">PRESSURE</div>
+            <div class="big">1012 hPa</div>
+          </div>
+          <div class="card mini">
+            <div class="label">ALTITUDE</div>
+            <div class="big">145 m</div>
+          </div>
+        </div>
+      </div>
+      <div class="footer">
+        <span class="live">LIVE STATUS</span>
+        <span class="age">Packet age 4s</span>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

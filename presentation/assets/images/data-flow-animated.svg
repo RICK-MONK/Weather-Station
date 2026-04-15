@@ -1,0 +1,73 @@
+<svg width="1600" height="900" viewBox="0 0 1600 900" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0b2130"/>
+      <stop offset="100%" stop-color="#13394b"/>
+    </linearGradient>
+    <linearGradient id="panel" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#12354a"/>
+      <stop offset="100%" stop-color="#183f56"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#16d6ff"/>
+      <stop offset="100%" stop-color="#86ff8b"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <rect width="1600" height="900" fill="url(#bg)"/>
+  <circle cx="180" cy="120" r="140" fill="#1cd2ff" opacity="0.08"/>
+  <circle cx="1420" cy="760" r="180" fill="#7dff8f" opacity="0.08"/>
+  <circle cx="1260" cy="180" r="120" fill="#16d6ff" opacity="0.05"/>
+  <text x="800" y="100" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="44" font-weight="700" fill="#ffffff">Animated-Style Data Flow Diagram</text>
+  <text x="800" y="145" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="24" fill="#b7d5e4">Local sensing, wireless transfer, backend storage, and remote visibility</text>
+  <rect x="80" y="260" width="240" height="330" rx="28" fill="url(#panel)" stroke="#1ad8ff" stroke-width="3"/>
+  <rect x="400" y="260" width="250" height="330" rx="28" fill="url(#panel)" stroke="#1ad8ff" stroke-width="3"/>
+  <rect x="730" y="260" width="250" height="330" rx="28" fill="url(#panel)" stroke="#1ad8ff" stroke-width="3"/>
+  <rect x="1060" y="260" width="230" height="330" rx="28" fill="url(#panel)" stroke="#1ad8ff" stroke-width="3"/>
+  <rect x="1370" y="260" width="160" height="330" rx="28" fill="url(#panel)" stroke="#1ad8ff" stroke-width="3"/>
+  <text x="200" y="330" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="32" font-weight="700" fill="#ffffff">Sensors</text>
+  <text x="525" y="330" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="32" font-weight="700" fill="#ffffff">Sensor ESP32</text>
+  <text x="855" y="330" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="32" font-weight="700" fill="#ffffff">Gateway ESP32</text>
+  <text x="1175" y="330" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="32" font-weight="700" fill="#ffffff">Backend</text>
+  <text x="1450" y="330" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="32" font-weight="700" fill="#ffffff">UI</text>
+  <text x="200" y="390" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="24" fill="#b7d5e4">DHT22</text>
+  <text x="200" y="430" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="24" fill="#b7d5e4">BMP280</text>
+  <text x="200" y="470" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="24" fill="#b7d5e4">Soil Sensor</text>
+  <text x="200" y="530" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="22" fill="#7dff8f">capture local data</text>
+  <text x="525" y="405" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="24" fill="#b7d5e4">read + validate</text>
+  <text x="525" y="445" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="24" fill="#b7d5e4">filter + calculate</text>
+  <text x="525" y="485" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="24" fill="#b7d5e4">build payload</text>
+  <text x="525" y="545" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="22" fill="#7dff8f">prepare transmission</text>
+  <text x="855" y="405" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="24" fill="#b7d5e4">receive ESP-NOW</text>
+  <text x="855" y="445" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="24" fill="#b7d5e4">update TFT display</text>
+  <text x="855" y="485" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="24" fill="#b7d5e4">track packet age</text>
+  <text x="855" y="545" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="22" fill="#7dff8f">forward by HTTP</text>
+  <text x="1175" y="405" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="24" fill="#b7d5e4">Flask API</text>
+  <text x="1175" y="445" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="24" fill="#b7d5e4">validate payload</text>
+  <text x="1175" y="485" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="24" fill="#b7d5e4">store in MongoDB</text>
+  <text x="1175" y="545" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="22" fill="#7dff8f">preserve history</text>
+  <text x="1450" y="405" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="24" fill="#b7d5e4">Vue</text>
+  <text x="1450" y="445" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="24" fill="#b7d5e4">live cards</text>
+  <text x="1450" y="485" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="24" fill="#b7d5e4">trend charts</text>
+  <text x="1450" y="545" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="22" fill="#7dff8f">remote insight</text>
+  <line x1="320" y1="425" x2="400" y2="425" stroke="url(#accent)" stroke-width="10" stroke-linecap="round" filter="url(#glow)"/>
+  <polygon points="400,425 374,409 374,441" fill="#4ef1cb"/>
+  <text x="360" y="390" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="22" font-weight="700" fill="#16d6ff">sense</text>
+  <line x1="650" y1="425" x2="730" y2="425" stroke="url(#accent)" stroke-width="10" stroke-linecap="round" filter="url(#glow)"/>
+  <polygon points="730,425 704,409 704,441" fill="#4ef1cb"/>
+  <text x="690" y="390" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="22" font-weight="700" fill="#16d6ff">ESP-NOW</text>
+  <line x1="980" y1="425" x2="1060" y2="425" stroke="url(#accent)" stroke-width="10" stroke-linecap="round" filter="url(#glow)"/>
+  <polygon points="1060,425 1034,409 1034,441" fill="#4ef1cb"/>
+  <text x="1020" y="390" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="22" font-weight="700" fill="#16d6ff">HTTP</text>
+  <line x1="1290" y1="425" x2="1370" y2="425" stroke="url(#accent)" stroke-width="10" stroke-linecap="round" filter="url(#glow)"/>
+  <polygon points="1370,425 1344,409 1344,441" fill="#4ef1cb"/>
+  <text x="1330" y="390" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="22" font-weight="700" fill="#16d6ff">API</text>
+  <rect x="120" y="675" width="1360" height="92" rx="22" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.15)" stroke-width="2"/>
+  <text x="800" y="730" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="28" fill="#ffffff">Field data becomes visible insight through a staged embedded and web pipeline</text>
+</svg>

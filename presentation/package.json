@@ -1,0 +1,15 @@
+{
+  "name": "weather-station-presentation",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Marp slide deck for the ESP32 weather station project",
+  "scripts": {
+    "preview": "marp --server .",
+    "export:html": "marp slides.md --html --allow-local-files --output dist/index.html",
+    "export:pdf": "marp slides.md --pdf --allow-local-files --output dist/weather-station-presentation.pdf",
+    "export:pptx": "marp slides.md --pptx --allow-local-files --output dist/weather-station-presentation.pptx"
+  },
+  "devDependencies": {
+    "@marp-team/marp-cli": "^4.1.2"
+  }
+}

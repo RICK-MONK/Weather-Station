@@ -1,0 +1,297 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Smarty Weather Station Hero</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      width: 1600px;
+      height: 900px;
+      overflow: hidden;
+      font-family: Arial, Helvetica, sans-serif;
+      background:
+        radial-gradient(circle at 15% 20%, rgba(34, 211, 238, 0.22), transparent 26%),
+        radial-gradient(circle at 85% 18%, rgba(250, 204, 21, 0.16), transparent 18%),
+        linear-gradient(135deg, #eef7fb 0%, #d9e9f4 100%);
+      color: #163447;
+    }
+    .wrap {
+      width: 100%;
+      height: 100%;
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      align-items: center;
+      padding: 60px 80px;
+      gap: 40px;
+    }
+    .copy h1 {
+      margin: 0 0 16px;
+      font-size: 72px;
+      line-height: 0.98;
+      color: #0f5b6e;
+    }
+    .copy p {
+      margin: 0 0 24px;
+      font-size: 30px;
+      line-height: 1.35;
+      color: #426174;
+      max-width: 620px;
+    }
+    .pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+    }
+    .pill {
+      padding: 12px 18px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.82);
+      border: 1px solid rgba(19, 77, 102, 0.12);
+      color: #0f5b6e;
+      font-size: 20px;
+      font-weight: 700;
+      box-shadow: 0 8px 18px rgba(15, 91, 110, 0.08);
+    }
+    .art {
+      position: relative;
+      height: 100%;
+      display: grid;
+      place-items: center;
+    }
+    .ring {
+      position: absolute;
+      inset: 90px 70px 90px 70px;
+      border-radius: 50%;
+      border: 2px dashed rgba(15, 91, 110, 0.18);
+    }
+    .device {
+      width: 540px;
+      height: 380px;
+      border-radius: 28px;
+      background: linear-gradient(160deg, #282f35 0%, #12181d 100%);
+      box-shadow: 0 28px 60px rgba(13, 39, 58, 0.26);
+      padding: 18px;
+      position: relative;
+    }
+    .screen {
+      width: 100%;
+      height: 100%;
+      border-radius: 22px;
+      background:
+        radial-gradient(circle at 20% 20%, rgba(250, 204, 21, 0.16), transparent 18%),
+        linear-gradient(180deg, #07131d 0%, #0b1924 100%);
+      border: 2px solid rgba(255,255,255,0.06);
+      padding: 22px;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      gap: 18px;
+    }
+    .top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: #dff7ff;
+      font-size: 22px;
+      font-weight: 700;
+    }
+    .wifi {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: #22d3ee;
+      font-size: 18px;
+      font-weight: 800;
+    }
+    .wifi .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #84cc16;
+      box-shadow: 0 0 0 8px rgba(132, 204, 22, 0.08);
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 16px;
+    }
+    .left {
+      display: grid;
+      grid-template-rows: 1fr 1fr;
+      gap: 16px;
+    }
+    .card {
+      border-radius: 18px;
+      padding: 16px 18px;
+      background: rgba(18, 32, 44, 0.92);
+      border: 1px solid rgba(255,255,255,0.05);
+      color: #d6eef6;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
+    }
+    .label {
+      font-size: 14px;
+      letter-spacing: 0.14em;
+      color: #88a8bb;
+      margin-bottom: 14px;
+      font-weight: 700;
+    }
+    .temp {
+      font-size: 66px;
+      line-height: 1;
+      font-weight: 800;
+      color: #facc15;
+    }
+    .sub {
+      margin-top: 12px;
+      display: grid;
+      gap: 8px;
+      font-size: 18px;
+    }
+    .sub span:nth-child(1) { color: #38bdf8; }
+    .sub span:nth-child(2) { color: #f97316; }
+    .sub span:nth-child(3) { color: #a3e635; }
+    .soil {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 12px;
+    }
+    .soil .value {
+      font-size: 60px;
+      font-weight: 800;
+      color: #22d3ee;
+    }
+    .bar {
+      width: 100%;
+      height: 14px;
+      border-radius: 999px;
+      background: #07111b;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.04);
+    }
+    .bar::after {
+      content: "";
+      display: block;
+      width: 62%;
+      height: 100%;
+      background: linear-gradient(90deg, #22d3ee 0%, #facc15 100%);
+    }
+    .right {
+      display: grid;
+      gap: 16px;
+    }
+    .mini {
+      min-height: 118px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .mini .big {
+      font-size: 38px;
+      font-weight: 800;
+      color: #a3e635;
+    }
+    .mini:nth-child(2) .big { color: #f472b6; }
+    .footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .live {
+      padding: 10px 14px;
+      border-radius: 12px;
+      background: rgba(34, 211, 238, 0.12);
+      color: #22d3ee;
+      font-size: 16px;
+      font-weight: 800;
+      border: 1px solid rgba(34, 211, 238, 0.18);
+    }
+    .age {
+      color: #c5d6df;
+      font-size: 16px;
+      font-weight: 700;
+    }
+    .wireless-badge {
+      position: absolute;
+      top: -18px;
+      right: -18px;
+      padding: 14px 18px;
+      border-radius: 18px;
+      background: #ffffff;
+      color: #0f5b6e;
+      box-shadow: 0 18px 36px rgba(15, 91, 110, 0.16);
+      border: 1px solid rgba(15, 91, 110, 0.08);
+      font-size: 18px;
+      font-weight: 800;
+    }
+    .wireless-badge small {
+      display: block;
+      color: #6b8798;
+      font-size: 12px;
+      margin-top: 4px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="copy">
+      <h1>Smarty Weather Station</h1>
+      <p>A wireless ESP32 weather and soil monitoring system with a live display, backend storage, and remote dashboard access.</p>
+      <div class="pills">
+        <div class="pill">ESP-NOW Display</div>
+        <div class="pill">Live Sensor Data</div>
+        <div class="pill">Remote Dashboard</div>
+      </div>
+    </div>
+    <div class="art">
+      <div class="ring"></div>
+      <div class="device">
+        <div class="wireless-badge">Wireless Display<small>ESP-NOW + Wi-Fi Gateway</small></div>
+        <div class="screen">
+          <div class="top">
+            <div>SMARTY WX</div>
+            <div class="wifi"><span class="dot"></span>ONLINE</div>
+          </div>
+          <div class="grid">
+            <div class="left">
+              <div class="card">
+                <div class="label">CLIMATE</div>
+                <div class="temp">24.4 C</div>
+                <div class="sub">
+                  <span>Humidity 61%</span>
+                  <span>Heat Index 25.8 C</span>
+                  <span>Comfort: Stable</span>
+                </div>
+              </div>
+              <div class="card soil">
+                <div class="label">SOIL MOISTURE</div>
+                <div class="value">62%</div>
+                <div class="bar"></div>
+              </div>
+            </div>
+            <div class="right">
+              <div class="card mini">
+                <div class="label">PRESSURE</div>
+                <div class="big">1012 hPa</div>
+              </div>
+              <div class="card mini">
+                <div class="label">ALTITUDE</div>
+                <div class="big">145 m</div>
+              </div>
+            </div>
+          </div>
+          <div class="footer">
+            <div class="live">LIVE STATUS</div>
+            <div class="age">Packet age 4s</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

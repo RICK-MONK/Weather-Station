@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Smarty Weather Station Roadmap</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      width: 1600px;
+      height: 900px;
+      overflow: hidden;
+      font-family: Arial, Helvetica, sans-serif;
+      background:
+        radial-gradient(circle at 20% 18%, rgba(34, 211, 238, 0.12), transparent 22%),
+        linear-gradient(135deg, #f5fbfd 0%, #e6f0f6 100%);
+      color: #153447;
+    }
+    .wrap {
+      width: 100%;
+      height: 100%;
+      padding: 70px 86px;
+    }
+    h1 {
+      margin: 0 0 14px;
+      font-size: 56px;
+      color: #0f5b6e;
+    }
+    p {
+      margin: 0 0 34px;
+      font-size: 24px;
+      color: #506c7d;
+      max-width: 920px;
+    }
+    .timeline {
+      position: relative;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 24px;
+      margin-top: 24px;
+      align-items: start;
+    }
+    .timeline::before {
+      content: "";
+      position: absolute;
+      left: 5%;
+      right: 5%;
+      top: 108px;
+      height: 8px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #22d3ee 0%, #0b7285 100%);
+    }
+    .step {
+      position: relative;
+      padding-top: 58px;
+    }
+    .dot {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: #ffffff;
+      border: 8px solid #22d3ee;
+      box-shadow: 0 12px 22px rgba(15, 91, 110, 0.12);
+      margin: 0 auto 26px;
+    }
+    .card {
+      background: rgba(255,255,255,0.86);
+      border: 1px solid rgba(36, 77, 115, 0.1);
+      border-radius: 22px;
+      padding: 24px 22px;
+      box-shadow: 0 16px 32px rgba(15, 91, 110, 0.08);
+      min-height: 310px;
+    }
+    .phase {
+      font-size: 14px;
+      font-weight: 800;
+      letter-spacing: 0.18em;
+      color: #6b8798;
+      margin-bottom: 12px;
+    }
+    .title {
+      font-size: 28px;
+      font-weight: 800;
+      color: #0f5b6e;
+      margin-bottom: 16px;
+      line-height: 1.1;
+    }
+    ul {
+      margin: 0;
+      padding-left: 20px;
+      color: #4b687b;
+      font-size: 19px;
+      line-height: 1.45;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Product Roadmap</h1>
+    <p>A practical growth path for Smarty Weather Station, starting from strong monitoring and moving toward a fuller smart-environment platform.</p>
+    <div class="timeline">
+      <div class="step">
+        <div class="dot"></div>
+        <div class="card">
+          <div class="phase">PHASE 1</div>
+          <div class="title">Monitoring First</div>
+          <ul>
+            <li>stabilize sensing and display experience</li>
+            <li>refine dashboard views and control status</li>
+            <li>improve hardware presentation and enclosure</li>
+          </ul>
+        </div>
+      </div>
+      <div class="step">
+        <div class="dot"></div>
+        <div class="card">
+          <div class="phase">PHASE 2</div>
+          <div class="title">Alerts And Actions</div>
+          <ul>
+            <li>threshold-based alerts for heat, humidity, and dry soil</li>
+            <li>notification hooks for web or mobile</li>
+            <li>smarter warning and maintenance states</li>
+          </ul>
+        </div>
+      </div>
+      <div class="step">
+        <div class="dot"></div>
+        <div class="card">
+          <div class="phase">PHASE 3</div>
+          <div class="title">Automation Layer</div>
+          <ul>
+            <li>link soil readings to irrigation actions</li>
+            <li>add actuator control and queue execution</li>
+            <li>move from monitoring to response</li>
+          </ul>
+        </div>
+      </div>
+      <div class="step">
+        <div class="dot"></div>
+        <div class="card">
+          <div class="phase">PHASE 4</div>
+          <div class="title">Scaled Product</div>
+          <ul>
+            <li>cloud deployment and multi-device support</li>
+            <li>fleet dashboards for larger sites</li>
+            <li>analytics and prediction-ready data pipeline</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

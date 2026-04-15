@@ -1,0 +1,654 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>EnviroView One Mock Display</title>
+  <style>
+    :root {
+      --bg: #030712;
+      --panel: #111827;
+      --panel-2: #0f172a;
+      --line: #1f2937;
+      --text: #e5e7eb;
+      --muted: #94a3b8;
+      --cyan: #22d3ee;
+      --lime: #a3e635;
+      --yellow: #facc15;
+      --orange: #f97316;
+      --red: #ef4444;
+      --sky: #38bdf8;
+      --pink: #d946ef;
+      --radius: 26px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at top, rgba(34, 211, 238, 0.08), transparent 32%),
+        linear-gradient(180deg, #020617 0%, #030712 100%);
+      color: var(--text);
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .device {
+      width: 100%;
+      max-width: none;
+      height: 100vh;
+      background: #000000;
+      border: 1px solid #111827;
+      border-radius: 0;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .header,
+    .footer,
+    .tabs {
+      background: #0b1220;
+    }
+
+    .header {
+      padding: 22px 26px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .brand {
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      color: var(--cyan);
+      text-transform: uppercase;
+    }
+
+    .subline,
+    .header-right small,
+    .meta-label,
+    .panel-title,
+    .status-reason,
+    .stat-label {
+      color: var(--muted);
+    }
+
+    .subline {
+      margin-top: 8px;
+      font-size: 16px;
+    }
+
+    .header-right {
+      text-align: right;
+    }
+
+    .header-right .screen {
+      color: var(--cyan);
+      text-transform: uppercase;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+    }
+
+    .header-right .time {
+      margin-top: 8px;
+      font-size: 26px;
+      color: #ffffff;
+      font-family: Consolas, monospace;
+    }
+
+    .main {
+      flex: 1;
+      padding: 24px;
+      overflow: hidden;
+    }
+
+    .grid-two {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      height: 100%;
+    }
+
+    .stack {
+      display: grid;
+      gap: 18px;
+      height: 100%;
+      grid-template-rows: 1fr auto;
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      padding: 22px;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.02);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 0;
+    }
+
+    .card-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--muted);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 18px;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      display: inline-block;
+    }
+
+    .dot.yellow { background: var(--yellow); }
+    .dot.lime { background: var(--lime); }
+    .dot.cyan { background: var(--cyan); }
+    .dot.pink { background: var(--pink); }
+    .dot.orange { background: var(--orange); }
+
+    .metric-large {
+      font-size: 56px;
+      font-weight: 800;
+      line-height: 1;
+      margin-bottom: 16px;
+    }
+
+    .metric-large.small {
+      font-size: 48px;
+    }
+
+    .metric-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+      font-size: 18px;
+    }
+
+    .metric-row:last-child {
+      border-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .value-yellow { color: var(--yellow); }
+    .value-sky { color: var(--sky); }
+    .value-orange { color: var(--orange); }
+    .value-lime { color: var(--lime); }
+    .value-pink { color: var(--pink); }
+    .value-cyan { color: var(--cyan); }
+
+    .status-box {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      border-radius: 12px;
+      padding: 8px 14px;
+      font-weight: 800;
+      font-size: 14px;
+      text-transform: uppercase;
+    }
+
+    .status-box.normal {
+      background: var(--lime);
+      color: #04110a;
+    }
+
+    .status-box.warning {
+      background: var(--orange);
+      color: #111111;
+    }
+
+    .status-box.critical {
+      background: var(--red);
+      color: #ffffff;
+    }
+
+    .status-box.partial {
+      background: var(--orange);
+      color: #111111;
+    }
+
+    .soil-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 22px;
+    }
+
+    .soil-main {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .badge {
+      padding: 10px 16px;
+      border-radius: 12px;
+      font-weight: 800;
+      color: #111111;
+      min-width: 88px;
+      text-align: center;
+    }
+
+    .badge.dry { background: var(--orange); }
+    .badge.mid { background: var(--yellow); }
+    .badge.wet { background: var(--cyan); }
+
+    .progress-track {
+      width: 100%;
+      height: 16px;
+      background: #020617;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      overflow: hidden;
+      margin-bottom: 18px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      border-radius: 999px;
+    }
+
+    .action {
+      font-size: 20px;
+      font-weight: 800;
+    }
+
+    .system-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      height: 100%;
+    }
+
+    .table {
+      display: grid;
+      gap: 12px;
+    }
+
+    .table-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+      font-size: 18px;
+    }
+
+    .table-row:last-child {
+      border-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .table-row .key {
+      color: var(--muted);
+    }
+
+    .table-row .val {
+      color: #ffffff;
+      font-weight: 600;
+      text-align: right;
+    }
+
+    .weather-status {
+      min-height: 170px;
+      display: flex;
+      align-items: center;
+      gap: 18px;
+    }
+
+    .weather-status .icon {
+      width: 60px;
+      height: 60px;
+      border-radius: 16px;
+      display: grid;
+      place-items: center;
+      font-size: 28px;
+      font-weight: 800;
+      background: rgba(163, 230, 53, 0.12);
+      color: var(--lime);
+      border: 1px solid rgba(163, 230, 53, 0.2);
+    }
+
+    .weather-status .status-name {
+      font-size: 30px;
+      font-weight: 800;
+      margin-bottom: 6px;
+      color: var(--lime);
+    }
+
+    .tabs {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      padding: 10px;
+      border-top: 1px solid var(--line);
+    }
+
+    .tab {
+      border-radius: 16px;
+      padding: 14px 12px;
+      text-align: center;
+      color: #6b7280;
+      border: 1px solid transparent;
+      background: transparent;
+      font-size: 14px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .tab.active {
+      background: #111827;
+      color: var(--cyan);
+      border-color: var(--line);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    }
+
+    .footer {
+      border-top: 1px solid var(--line);
+      padding: 10px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    .footer-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .live-pill,
+    .age-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      border-radius: 10px;
+      padding: 8px 12px;
+      background: #0f172a;
+      border: 1px solid var(--line);
+      font-weight: 800;
+    }
+
+    .live-pill {
+      color: var(--cyan);
+    }
+
+    .pulse {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: var(--lime);
+      box-shadow: 0 0 0 0 rgba(163, 230, 53, 0.65);
+      animation: pulse 1.6s infinite;
+    }
+
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(163, 230, 53, 0.65); }
+      70% { box-shadow: 0 0 0 10px rgba(163, 230, 53, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(163, 230, 53, 0); }
+    }
+
+    .mono {
+      font-family: Consolas, monospace;
+    }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+  <script>
+    const SOIL_RAW_DRY = 720;
+    const SOIL_RAW_WET = 160;
+    const SOIL_WARNING_PERCENT = 20;
+    const SOIL_CRITICAL_WET_PERCENT = 95;
+    const HUMIDITY_WARNING_PERCENT = 80.0;
+    const TEMPERATURE_CRITICAL_C = 35.0;
+    const HEAT_INDEX_CRITICAL_C = 41.0;
+    const PROJECT_LOCATION = "Project Site";
+    const ESPNOW_STALE_AFTER_MS = 8000;
+
+    const sensorData = {
+      temperature: 28.5,
+      humidity: 55.0,
+      heatIndex: 29.8,
+      pressure: 1012.5,
+      altitude: 145.2,
+      seaLevelPressureHpa: 1013.25,
+      soilMoisture: 450,
+      dhtOk: true,
+      bmpOk: true,
+      soilOk: true,
+      sampleMillis: Date.now()
+    };
+
+    function computeSoilPercent(rawValue) {
+      const percent = ((rawValue - SOIL_RAW_DRY) / (SOIL_RAW_WET - SOIL_RAW_DRY)) * 100;
+      return Math.max(0, Math.min(100, Math.round(percent)));
+    }
+
+    function getSoilStatusBadge(soilPercent) {
+      if (soilPercent <= SOIL_WARNING_PERCENT) return "DRY";
+      if (soilPercent <= 70) return "MID";
+      return "WET";
+    }
+
+    function getSoilBadgeClass(soilPercent) {
+      if (soilPercent <= SOIL_WARNING_PERCENT) return "dry";
+      if (soilPercent <= 70) return "mid";
+      return "wet";
+    }
+
+    function getSoilColor(soilPercent) {
+      if (soilPercent <= SOIL_WARNING_PERCENT) return "var(--orange)";
+      if (soilPercent <= 70) return "var(--yellow)";
+      return "var(--cyan)";
+    }
+
+    function getHeatComfortInfo(heatIndex) {
+      if (heatIndex < 27.0) return { label: "Comfortable", color: "var(--lime)" };
+      if (heatIndex < 32.0) return { label: "Warm", color: "var(--yellow)" };
+      if (heatIndex <= 41.0) return { label: "Hot", color: "var(--orange)" };
+      return { label: "Dangerous", color: "var(--red)" };
+    }
+
+    function getSoilActionText(soilPercent) {
+      if (soilPercent <= SOIL_WARNING_PERCENT) return "Action: WATER PLANTS";
+      if (soilPercent <= 70) return "Action: SOIL HEALTHY";
+      return "Action: HOLD WATERING";
+    }
+
+    function getSoilActionColor(soilPercent) {
+      if (soilPercent <= SOIL_WARNING_PERCENT) return "var(--orange)";
+      if (soilPercent <= 70) return "var(--lime)";
+      return "var(--cyan)";
+    }
+
+    function evaluateDashboardStatus(data) {
+      const climateAvailable = data.dhtOk;
+      const soilAvailable = data.soilOk;
+      const atmosphereAvailable = data.bmpOk;
+      const soilPercent = soilAvailable ? computeSoilPercent(data.soilMoisture) : -1;
+
+      if (climateAvailable && (data.temperature >= TEMPERATURE_CRITICAL_C || data.heatIndex >= HEAT_INDEX_CRITICAL_C)) {
+        return { label: "CRITICAL", reason: "Extreme temp", kind: "critical", icon: "!" };
+      }
+      if (soilAvailable && soilPercent >= SOIL_CRITICAL_WET_PERCENT) {
+        return { label: "CRITICAL", reason: "Overflow risk", kind: "critical", icon: "!" };
+      }
+      if (soilAvailable && soilPercent <= SOIL_WARNING_PERCENT) {
+        return { label: "WARNING", reason: "Dry soil", kind: "warning", icon: "!" };
+      }
+      if (climateAvailable && data.humidity >= HUMIDITY_WARNING_PERCENT) {
+        return { label: "WARNING", reason: "High humidity", kind: "warning", icon: "!" };
+      }
+      if (!climateAvailable || !soilAvailable || !atmosphereAvailable) {
+        return { label: "PARTIAL", reason: "Sensor offline", kind: "partial", icon: "!" };
+      }
+      return { label: "NORMAL", reason: "Conditions stable", kind: "normal", icon: ":)" };
+    }
+
+    const soilPercent = computeSoilPercent(sensorData.soilMoisture);
+    const comfort = getHeatComfortInfo(sensorData.heatIndex);
+    const status = evaluateDashboardStatus(sensorData);
+    const currentScreen = (new URLSearchParams(window.location.search).get("screen") || "DASHBOARD").toUpperCase();
+    const packetAgeMs = 4 * 1000;
+    const isEspNowFresh = packetAgeMs <= ESPNOW_STALE_AFTER_MS;
+    const timeText = "14:37:42";
+
+    function climateCard() {
+      return `
+        <section class="card">
+          <div class="card-title"><span class="dot yellow"></span> CLIMATE</div>
+          <div class="metric-large value-yellow">${sensorData.temperature.toFixed(1)} C</div>
+          <div class="metric-row"><span class="stat-label">Humidity</span><strong class="value-sky">${sensorData.humidity.toFixed(1)}%</strong></div>
+          <div class="metric-row"><span class="stat-label">HeatIdx</span><strong class="value-orange">${sensorData.heatIndex.toFixed(1)} C</strong></div>
+          <div class="metric-row"><span class="stat-label">Comfort</span><strong style="color:${comfort.color}">${comfort.label}</strong></div>
+        </section>
+      `;
+    }
+
+    function atmosphereCard() {
+      return `
+        <section class="card">
+          <div class="card-title"><span class="dot lime"></span> ATMOSPHERE</div>
+          <div class="metric-large small value-lime">${sensorData.pressure.toFixed(1)} hPa</div>
+          <div class="metric-row"><span class="stat-label">Est Alt</span><strong class="value-pink">${sensorData.altitude.toFixed(1)} m</strong></div>
+          <div class="metric-row"><span class="stat-label">Reference</span><strong>${sensorData.seaLevelPressureHpa.toFixed(2)} hPa</strong></div>
+        </section>
+      `;
+    }
+
+    function soilCard(detailed) {
+      return `
+        <section class="card">
+          <div class="soil-header">
+            <div class="card-title" style="margin-bottom:0"><span class="dot lime"></span> SOIL MOISTURE</div>
+            ${detailed ? "" : `<div class="status-box ${status.kind}"><span>${status.icon}</span><span>${status.label}</span></div>`}
+          </div>
+          <div class="soil-main">
+            <div>
+              <div class="metric-large value-cyan" style="margin-bottom:8px">${soilPercent}%</div>
+              ${detailed ? `<div class="subline">Raw reading: <span class="mono">${sensorData.soilMoisture}</span></div>` : ""}
+            </div>
+            <div class="badge ${getSoilBadgeClass(soilPercent)}">${getSoilStatusBadge(soilPercent)}</div>
+          </div>
+          <div class="progress-track">
+            <div class="progress-fill" style="width:${soilPercent}%; background:${getSoilColor(soilPercent)}"></div>
+          </div>
+          <div class="action" style="color:${getSoilActionColor(soilPercent)}">${getSoilActionText(soilPercent)}</div>
+        </section>
+      `;
+    }
+
+    function dashboardScreen() {
+      return `
+        <div class="grid-two">
+          ${climateCard()}
+          ${atmosphereCard()}
+          <div style="grid-column:1 / -1">${soilCard(false)}</div>
+        </div>
+      `;
+    }
+
+    function weatherScreen() {
+      return `
+        <div class="stack">
+          <div class="grid-two">
+            ${climateCard()}
+            ${atmosphereCard()}
+          </div>
+          <section class="card weather-status">
+            <div class="icon">${status.icon}</div>
+            <div>
+              <div class="panel-title" style="margin-bottom:10px; letter-spacing:0.12em; text-transform:uppercase; font-weight:700;">SYSTEM STATUS</div>
+              <div class="status-name">${status.label}</div>
+              <div class="status-reason">${status.reason}</div>
+            </div>
+          </section>
+        </div>
+      `;
+    }
+
+    function systemScreen() {
+      return `
+        <div class="system-grid">
+          <section class="card">
+            <div class="card-title"><span class="dot cyan"></span> CONNECTIONS</div>
+            <div class="table">
+              <div class="table-row"><span class="key">ESP-NOW</span><span class="val" style="color:${isEspNowFresh ? "var(--lime)" : "var(--orange)"}">${isEspNowFresh ? "OK" : "STALE"}</span></div>
+              <div class="table-row"><span class="key">Wi-Fi</span><span class="val" style="color:var(--lime)">Connected</span></div>
+              <div class="table-row"><span class="key">IP Address</span><span class="val mono">192.168.1.142</span></div>
+            </div>
+          </section>
+          <section class="card">
+            <div class="card-title"><span class="dot pink"></span> SYSTEM INFO</div>
+            <div class="table">
+              <div class="table-row"><span class="key">SSID</span><span class="val">MonaConnect</span></div>
+              <div class="table-row"><span class="key">Backend</span><span class="val mono">172.16.192.225:5000</span></div>
+              <div class="table-row"><span class="key">Packet age</span><span class="val mono">${Math.floor(packetAgeMs / 1000)} s</span></div>
+              <div class="table-row"><span class="key">Flags D/B/S</span><span class="val mono">${sensorData.dhtOk ? "D" : "-"}/${sensorData.bmpOk ? "B" : "-"}/${sensorData.soilOk ? "S" : "-"}</span></div>
+            </div>
+          </section>
+        </div>
+      `;
+    }
+
+    function renderMain() {
+      if (currentScreen === "WEATHER") return weatherScreen();
+      if (currentScreen === "SOIL") return soilCard(true);
+      if (currentScreen === "SYSTEM") return systemScreen();
+      return dashboardScreen();
+    }
+
+    document.getElementById("app").innerHTML = `
+      <div class="device">
+        <header class="header">
+          <div>
+            <div class="brand">Smarty Weather Station</div>
+            <div class="subline">Project Site</div>
+          </div>
+          <div class="header-right">
+            <div class="screen">${currentScreen}</div>
+            <div class="time">${timeText}</div>
+          </div>
+        </header>
+        <main class="main">${renderMain()}</main>
+        <nav class="tabs">
+          <div class="tab ${currentScreen === "DASHBOARD" ? "active" : ""}">Dashboard</div>
+          <div class="tab ${currentScreen === "WEATHER" ? "active" : ""}">Weather</div>
+          <div class="tab ${currentScreen === "SOIL" ? "active" : ""}">Soil</div>
+          <div class="tab ${currentScreen === "SYSTEM" ? "active" : ""}">System</div>
+        </nav>
+        <footer class="footer">
+          <div class="footer-left">
+            <div class="live-pill"><span class="pulse"></span><span>LIVE</span></div>
+            <div class="mono" style="color:${isEspNowFresh ? "var(--lime)" : "var(--orange)"}">ESP-NOW: ${isEspNowFresh ? "OK" : "STALE"}</div>
+          </div>
+          <div class="age-pill mono">AGE ${Math.floor(packetAgeMs / 1000)}s</div>
+        </footer>
+      </div>
+    `;
+  </script>
+</body>
+</html>
