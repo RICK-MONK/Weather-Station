@@ -237,6 +237,23 @@ style: |
 
 ---
 
+# Bill Of Materials
+
+| Item | Qty | Est. cost (USD) | Role in system |
+| --- | ---: | ---: | --- |
+| ESP32 development board (sensor) | 1 | 7.69 | sensor node |
+| ESP32-2432S028 touch display board | 1 | 13.99 | display/gateway node |
+| DHT22 sensor | 1 | 8.90 | temperature and humidity sensing |
+| BMP280 module | 1 | 9.95 | pressure sensing and altitude estimate |
+| Capacitive soil moisture sensor | 1 | 5.90 | soil condition monitoring |
+| USB power / support parts | 1 set | 5.90 | power and basic hookup support |
+| Wiring / connectors / headers | 1 set | 3.95 | sensor and board interconnection |
+| Prototype breadboard hardware | 1 set | 4.95 | assembly and testing platform |
+
+<p class="note">Estimated hardware total: about $61.23 USD before shipping and tax, based on representative online prices checked on April 24, 2026. The gateway board includes the second ESP32 and the touch TFT.</p>
+
+---
+
 # PCB / Wiring Diagram
 
 <div class="split">

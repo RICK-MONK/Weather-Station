@@ -54,23 +54,38 @@ The sensor ESP32 collects readings from the DHT22, BMP280, and soil sensor. Thes
 
 ### 5.1 Main Components
 
-- ESP32 microcontroller
+- ESP32 sensor development board
+- ESP32-2432S028 touch display and gateway board
 - DHT22 temperature and humidity sensor
 - BMP280 pressure sensor
-- analog soil moisture sensor
-- touch TFT display
+- capacitive soil moisture sensor
 
-### 5.2 Sensor Interfaces
+### 5.2 Bill Of Materials
+
+| Item | Quantity | Estimated cost (USD) | Purpose |
+| --- | ---: | ---: | --- |
+| ESP32 development board (sensor node) | 1 | 7.69 | sensing and packet transmission |
+| ESP32-2432S028 touch display board (gateway node) | 1 | 13.99 | local display, touch UI, and gateway forwarding |
+| DHT22 sensor | 1 | 8.90 | temperature and humidity measurement |
+| BMP280 module | 1 | 9.95 | pressure measurement and derived altitude estimate |
+| Capacitive soil moisture sensor | 1 | 5.90 | soil condition sensing |
+| USB power leads and small support parts | 1 set | 5.90 | board power and basic hookup support |
+| Wiring, headers, and connectors | 1 set | 3.95 | interconnection between boards and sensors |
+| Prototype breadboard hardware | 1 set | 4.95 | physical assembly and integration |
+
+Estimated hardware total: **$61.23 USD** excluding shipping and tax, based on representative online prices checked on **April 24, 2026**.
+
+### 5.3 Sensor Interfaces
 
 - DHT22 data line on GPIO 4
 - BMP280 on I2C using GPIO 21 for SDA and GPIO 22 for SCL
 - soil sensor on analog GPIO 34
 
-### 5.3 Design Justification
+### 5.4 Design Justification
 
-The ESP32 was selected because it provides ADC support, Wi-Fi connectivity, and ESP-NOW support on a single platform. The BMP280 was chosen because it provides pressure data and supports derived altitude estimation, which reduces component count. The TFT display was included to make the system usable locally without requiring a laptop or browser during demonstration.
+The ESP32 was selected because it provides ADC support, Wi-Fi connectivity, and ESP-NOW support on a single platform. The BMP280 was chosen because it provides pressure data and supports derived altitude estimation, which reduces component count. The gateway hardware uses an ESP32-2432S028 touch display board, so the second ESP32 and the local TFT interface are combined into one demonstration unit.
 
-The project uses two ESP32 boards instead of one. This separates sensing from presentation and network forwarding duties. As a result, the sensor board can remain close to the measurement point while the display board acts as a wireless receiver and user-facing interface.
+The project uses two ESP32-based boards instead of one. This separates sensing from presentation and network forwarding duties. As a result, the sensor board can remain close to the measurement point while the display board acts as a wireless receiver and user-facing interface.
 
 ## 6. Software Design
 
